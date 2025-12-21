@@ -1,0 +1,30 @@
+{
+  "updatedAt": "2025-12-21T11:07:40.000Z",
+  "createdAt": "2025-12-21T11:02:19.663Z",
+  "id": "4yTKB7XBDXG9yECr",
+  "name": "n8n backup",
+  "active": false,
+  "isArchived": true,
+  "nodes": [],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "ec7ed5f4-71d8-46cc-95a1-661e22ab925e",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-12-21T11:02:20.657Z",
+      "createdAt": "2025-12-21T11:02:20.657Z",
+      "role": "workflow:owner",
+      "workflowId": "4yTKB7XBDXG9yECr",
+      "projectId": "bZbdnV5Ndy00mMkU"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
