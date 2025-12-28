@@ -1,0 +1,218 @@
+{
+  "updatedAt": "2025-09-20T09:36:42.000Z",
+  "createdAt": "2025-09-03T07:53:20.152Z",
+  "id": "jop6vtIOp4tYJEXN",
+  "name": "n8n-mcp",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "AIzaSyB_SFb9tHMimCUhvZanfAT51VE5-xRV-m0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "@request.json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        160,
+        -272
+      ],
+      "id": "a4d593ad-235a-4e41-ba13-cd1a91846c1c",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        -16
+      ],
+      "id": "d84271be-da62-479a-9607-63d317f8a185",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://10.128.0.4:3000/mcp",
+        "serverTransport": "httpStreamable",
+        "authentication": "bearerAuth",
+        "include": "except",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        176
+      ],
+      "id": "91ff6240-c26b-495d-a2da-b6bd26497840",
+      "name": "MCP Client",
+      "notesInFlow": false,
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "nccL3pkndZEpd2JD",
+          "name": "n8n-mcp-auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        288,
+        224
+      ],
+      "id": "08630dc1-ced5-4778-8598-fb40116a3f3c",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ntz1QCB8CXvSQho8",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        -16
+      ],
+      "id": "934bfa5c-256d-4e32-a560-85971614a542",
+      "name": "When chat message received",
+      "webhookId": "12fbec23-98d4-4ff2-976f-ca24fae8cf28"
+    },
+    {
+      "parameters": {
+        "model": "codestral-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        112,
+        192
+      ],
+      "id": "52aa63fb-dca7-4b4a-be39-4b8f71f25658",
+      "name": "Mistral Cloud Chat Model",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "fqhmxrCtEMFPBaCx",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        208
+      ],
+      "id": "6eed9b29-8993-4f13-822a-e8dad27c0efa",
+      "name": "Simple Memory"
+    }
+  ],
+  "connections": {
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Cloud Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "a4048892-cfcd-42bf-b244-2757c45bf097",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-09-03T07:53:20.628Z",
+      "createdAt": "2025-09-03T07:53:20.628Z",
+      "role": "workflow:owner",
+      "workflowId": "jop6vtIOp4tYJEXN",
+      "projectId": "bnvMSIIUgNfVjAJN"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
