@@ -1,0 +1,48 @@
+{
+  "updatedAt": "2025-10-19T20:50:27.000Z",
+  "createdAt": "2025-10-19T20:48:11.398Z",
+  "id": "D9oTN8GKp8CnkUUS",
+  "name": "ManyChat",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "f14d1950-c6da-4948-a91c-31441bac64d5",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "81075c7c-fe9d-4fb4-9aed-e89a044efa9e",
+      "name": "Webhook",
+      "webhookId": "f14d1950-c6da-4948-a91c-31441bac64d5"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "0771f770-df0d-47cb-952e-5576a501d5f1",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-10-19T20:48:11.453Z",
+      "createdAt": "2025-10-19T20:48:11.453Z",
+      "role": "workflow:owner",
+      "workflowId": "D9oTN8GKp8CnkUUS",
+      "projectId": "bnvMSIIUgNfVjAJN"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

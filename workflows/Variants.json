@@ -1,0 +1,1186 @@
+{
+  "updatedAt": "2025-12-28T16:13:14.838Z",
+  "createdAt": "2025-11-12T08:52:24.089Z",
+  "id": "bZxFUrOPmVEbMTkA",
+  "name": "Variants",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -448,
+        -192
+      ],
+      "id": "048baa5c-163d-4096-a8ec-e9bc6f121d2f",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "38017c55-034d-4644-baec-0a57b0c05764",
+              "leftValue": "={{ $json.niche }}",
+              "rightValue": "entrepreneur",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        64,
+        -192
+      ],
+      "id": "22ae2d0d-3cee-4576-87ab-eb69dd683728",
+      "name": "Entrepreneur"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c3e78911-b79a-4e5f-8ea2-2835f9edb6a8",
+              "leftValue": "={{ $json.niche }}",
+              "rightValue": "fitness",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        240,
+        16
+      ],
+      "id": "01154cf1-7b8d-4ec8-ad44-547b54b8fa33",
+      "name": "Fitness"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7a3a9a65-62a5-45af-9223-b448b4cb1ff8",
+              "leftValue": "={{ $json.niche }}",
+              "rightValue": "general motivation",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        512,
+        176
+      ],
+      "id": "cee28679-3f59-4fb3-9b51-257c3d7ad30e",
+      "name": "General Motivation"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract only the variable parts needed for asset generation\nconst baseJson = $('When Executed by Another Workflow').first().json;\n\nreturn [{\n  json: {\n    // Static structure (preserved for reconstruction)\n    baseStructure: {\n      endpoint: baseJson.endpoint,\n      audioUrl: baseJson.request_json.audioUrl,\n      original: baseJson.request_json.original,\n      quote: baseJson.request_json.quote,\n      description: baseJson.description,\n      niche: baseJson.niche,\n      transcription: baseJson.transcription,\n      caption: baseJson.caption,\n      clips: baseJson.request_json.clips?.map(clip => ({\n        start: clip.start,\n        duration: clip.duration,\n        volume: clip.volume,\n        begin: clip.begin\n      })) || [],\n      captions: baseJson.request_json.captions?.map(caption => ({\n        text: caption.text,\n        start: caption.start,\n        duration: caption.duration\n      })) || []\n    },\n    // Variable data for AI to process\n    variableData: {\n      clipDescriptions: baseJson.request_json.clips?.map(clip => clip.description) || [],\n      captionTexts: baseJson.request_json.captions?.map(caption => caption.text) || [],\n      mainCaption: baseJson.caption,\n      transcriptionRequired: baseJson.transcription,\n      audioUrl: baseJson.request_json.audioUrl\n    },\n    usernames: $input.first().json.usernames\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        -160
+      ],
+      "id": "ee7662cf-6c9b-4768-80ad-35515ce629cb",
+      "name": "Extract Variant Data"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a media asset generator. Generate variant-specific assets for each username.\n\n## Input:\n- Usernames: {{ $json.usernames }}\n- Clip Descriptions: {{ JSON.stringify($json.variableData.clipDescriptions) }}\n- Transcription Required: {{ $json.variableData.transcriptionRequired }}\n- Audio URL: {{ $json.variableData.audioUrl }}\n\n## Task:\nFor each username, use Pexels tools to find NEW media URLs that match each clip description.\n\n## Transcription Handling:\nIF transcriptionRequired is true:\n1. Call Transcription tool with the audio URL\n2. Return timing adjustments in the output\n\n## Output Format (JSON array only):\n```json\n[\n  {\n    \"username\": \"@username1\",\n    \"clipAssets\": [\n      {\"videoUrl\": \"<pexels_url>\", \"description\": \"<varied_description>\"}\n    ],\n    \"captionAlts\": [\n      {\"alt\": \"<rewritten_caption>\"}\n    ],\n    \"captionVariant\": \"<slightly_varied_main_caption>\",\n    \"timingAdjustments\": null\n  }\n]\n```\n\n## Rules:\n- Use DIFFERENT Pexels URLs for each variant\n- Vary descriptions while keeping same vibe\n- Read Pexels alt tags carefully before selecting\n- Return ONLY the JSON array, no markdown\n\nGenerate assets now:",
+        "needsFallback": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1664,
+        -160
+      ],
+      "id": "ab88d869-3ddf-44dc-a7f1-2448f4e8d70a",
+      "name": "AI Agent",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1648,
+        192
+      ],
+      "id": "9ec91184-2d6d-4f38-a114-359e34550053",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0Y3IITMeiDyvu2zW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse AI output and reconstruct full variants\nconst raw = $json.output;\nconst cleaned = raw.replace(/^```json\\s*/i, '').replace(/```$/i, '').trim();\n\nlet assetVariants;\ntry {\n  assetVariants = JSON.parse(cleaned);\n} catch (error) {\n  throw new Error('Failed to parse AI output: ' + error.message);\n}\n\n// Get base structure from Extract node\nconst { baseStructure, variableData } = $('Extract Variant Data').first().json;\n\n// Reconstruct full variants\nconst variants = assetVariants.map(assets => {\n  const variant = {\n    endpoint: baseStructure.endpoint,\n    request_json: {\n      audioUrl: baseStructure.audioUrl,\n      original: baseStructure.original,\n      quote: baseStructure.quote,\n      watermark: assets.username,\n      clips: baseStructure.clips.map((clipTiming, i) => ({\n        ...clipTiming,\n        videoUrl: assets.clipAssets[i]?.videoUrl || variableData.clipDescriptions[i],\n        description: assets.clipAssets[i]?.description || variableData.clipDescriptions[i]\n      }))\n    },\n    caption: assets.captionVariant || baseStructure.caption,\n    description: baseStructure.description,\n    niche: baseStructure.niche,\n    transcription: baseStructure.transcription\n  };\n  \n  // Add captions if they exist\n  if (baseStructure.captions?.length > 0) {\n    variant.request_json.captions = baseStructure.captions.map((captionTiming, i) => ({\n      ...captionTiming,\n      alt: assets.captionAlts?.[i]?.alt\n    }));\n  }\n  \n  // Apply timing adjustments if transcription was processed\n  if (assets.timingAdjustments) {\n    // Merge timing adjustments here if needed\n  }\n  \n  return variant;\n});\n\nreturn variants.map(item => ({ json: item }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2592,
+        -144
+      ],
+      "id": "3c3ec7df-ae77-4110-bdfe-ae3d62a6d0f5",
+      "name": "Reconstruct Variants"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "6Xc0iVUUnEutpnpq",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/6Xc0iVUUnEutpnpq",
+          "cachedResultName": "Transcription"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        2336,
+        192
+      ],
+      "id": "659fcc54-20c2-4e4d-96c7-35030574b0a2",
+      "name": "Transcription"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pexels.com/v1/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $fromAI('query', '', 'string') }}"
+            },
+            {
+              "name": "per_page",
+              "value": "={{ $fromAI('per_page', '5', 'string') }}"
+            },
+            {
+              "name": "page",
+              "value": "1"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "BPTelSvr7cxNsU51XT1G9QthMZA3rlOvvvQ24XErrFxCHxT5vgJej7LD"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        2208,
+        176
+      ],
+      "id": "17e14626-3e36-42e1-b037-44fd03b284aa",
+      "name": "Pexels Images"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pexels.com/videos/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $fromAI('query', '', 'string') }}"
+            },
+            {
+              "name": "per_page",
+              "value": "={{ $fromAI('per_page', '5', 'string') }}"
+            },
+            {
+              "name": "page",
+              "value": "1"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "BPTelSvr7cxNsU51XT1G9QthMZA3rlOvvvQ24XErrFxCHxT5vgJej7LD"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        2080,
+        192
+      ],
+      "id": "740c4d98-0cfe-4251-b71d-97f0e312deda",
+      "name": "Pexels Videos"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "193486d8-9dd4-432f-adce-974541fd86ac",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "\"\"",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2080,
+        -160
+      ],
+      "id": "6d10aaf6-36d7-49fb-a3db-d37352f63362",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        192
+      ],
+      "id": "4f09be7d-bbea-439a-844a-8aa9ae574420",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "4ZEZ83UlO38Ss7tT",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "2c751a6d-097f-80d7-9366-e12aae2f619c",
+          "mode": "list",
+          "cachedResultName": "Accounts",
+          "cachedResultUrl": "https://www.notion.so/2c751a6d097f80d79366e12aae2f619c"
+        },
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Niche|rich_text",
+              "condition": "contains",
+              "richTextValue": "=entrepreneur"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        -304
+      ],
+      "id": "7d3bf52b-a1e5-4dc4-9dbf-c5557c9a93bb",
+      "name": "Get many database pages",
+      "credentials": {
+        "notionApi": {
+          "id": "NsYBQ9PiZRbvlVC9",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst usernames = items.map(item => item.json.name);\nreturn [{ json: { usernames: usernames } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        -304
+      ],
+      "id": "8b82a554-2e81-4d5e-a2f5-a627062f5500",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "2c751a6d-097f-80d7-9366-e12aae2f619c",
+          "mode": "list",
+          "cachedResultName": "Accounts",
+          "cachedResultUrl": "https://www.notion.so/2c751a6d097f80d79366e12aae2f619c"
+        },
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Niche|rich_text",
+              "condition": "contains",
+              "richTextValue": "=fitness"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        496,
+        -112
+      ],
+      "id": "50dcaf59-20af-4a3f-bc1f-ca1c0963bd73",
+      "name": "Get many database pages1",
+      "credentials": {
+        "notionApi": {
+          "id": "NsYBQ9PiZRbvlVC9",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst usernames = items.map(item => item.json.name);\nreturn [{ json: { usernames: usernames } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        -112
+      ],
+      "id": "d1990721-3880-42fa-8139-77ceb3b519ac",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "2c751a6d-097f-80d7-9366-e12aae2f619c",
+          "mode": "list",
+          "cachedResultName": "Accounts",
+          "cachedResultUrl": "https://www.notion.so/2c751a6d097f80d79366e12aae2f619c"
+        },
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Niche|rich_text",
+              "condition": "contains",
+              "richTextValue": "=motivation"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        848,
+        160
+      ],
+      "id": "ae0ce4f3-05e9-4682-9298-6d743377c00e",
+      "name": "Get many database pages2",
+      "credentials": {
+        "notionApi": {
+          "id": "NsYBQ9PiZRbvlVC9",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst usernames = items.map(item => item.json.name);\nreturn [{ json: { usernames: usernames } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        160
+      ],
+      "id": "728fa134-66f5-4ded-8cb5-c22551a5c44b",
+      "name": "Code in JavaScript3"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Entrepreneur",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Entrepreneur": {
+      "main": [
+        [
+          {
+            "node": "Get many database pages",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fitness",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fitness": {
+      "main": [
+        [
+          {
+            "node": "Get many database pages1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "General Motivation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "General Motivation": {
+      "main": [
+        [
+          {
+            "node": "Get many database pages2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Variant Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcription": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pexels Images": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pexels Videos": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reconstruct Variants",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many database pages": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Extract Variant Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many database pages1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Extract Variant Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many database pages2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Extract Variant Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "endpoint": "/vid-1.3",
+          "request_json": {
+            "audioUrl": "https://vllxucytucjyflsenjmz.supabase.co/storage/v1/object/public/assets/285_audio.mp3",
+            "audioDescription": "Motivational voiceover with high-quality background music",
+            "watermark": "@luxurymotivation",
+            "clips": [
+              {
+                "videoUrl": "https://example.com/bw-suit-man.mp4",
+                "description": "Black and white clip of man in suit, referencing high-status aesthetics",
+                "start": 0,
+                "duration": 2
+              },
+              {
+                "videoUrl": "https://example.com/man-porsche-exterior.jpg",
+                "description": "Man standing by a grey Porsche 911 GT3 RS outside a classical building",
+                "start": 2,
+                "duration": 2.5
+              },
+              {
+                "videoUrl": "https://example.com/driving-details-1.mp4",
+                "description": "Close-up of luxury watch on a steering wheel and car details",
+                "start": 4.5,
+                "duration": 3
+              },
+              {
+                "videoUrl": "https://example.com/high-status-entry.mp4",
+                "description": "Chauffeur service with black Mercedes S-Class and sports car transport",
+                "start": 7.5,
+                "duration": 1.5
+              },
+              {
+                "videoUrl": "https://example.com/security-group-watch.mp4",
+                "description": "Group of men/security personnel and luxury interior/watch shots",
+                "start": 9,
+                "duration": 3
+              }
+            ],
+            "captions": [
+              {
+                "text": "And that's why they call us lucky",
+                "start": 0,
+                "duration": 2.5
+              },
+              {
+                "text": "because they assume that we are gonna",
+                "start": 2.5,
+                "duration": 2
+              },
+              {
+                "text": "input the same",
+                "start": 4.5,
+                "duration": 2.5
+              },
+              {
+                "text": "weak and measly",
+                "start": 7,
+                "duration": 2
+              },
+              {
+                "text": "levels of energy and attention that they would",
+                "start": 9,
+                "duration": 3
+              }
+            ],
+            "duration": 12
+          },
+          "caption": "Success isn't luck; it's the energy and attention you input daily.",
+          "description": "Motivational reel mixing cinematic luxury footage with a voiceover quote about effort and perception.",
+          "niche": "general motivation",
+          "transcription": true
+        }
+      }
+    ]
+  },
+  "versionId": "c4f3d84d-608c-4e77-b5a5-98562b63f4cc",
+  "activeVersionId": "2716ee42-d356-4bc4-b535-1807c6f416a7",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-11-12T08:52:24.157Z",
+      "createdAt": "2025-11-12T08:52:24.157Z",
+      "role": "workflow:owner",
+      "workflowId": "bZxFUrOPmVEbMTkA",
+      "projectId": "bnvMSIIUgNfVjAJN"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-28T15:26:32.272Z",
+    "createdAt": "2025-12-28T15:26:32.272Z",
+    "versionId": "2716ee42-d356-4bc4-b535-1807c6f416a7",
+    "workflowId": "bZxFUrOPmVEbMTkA",
+    "nodes": [
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "38017c55-034d-4644-baec-0a57b0c05764",
+                "leftValue": "={{ $json.niche }}",
+                "rightValue": "entrepreneur",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -224,
+          -192
+        ],
+        "id": "26c1c4f5-45a0-4ac6-a6cb-026154ae30f7",
+        "name": "Entrepreneur"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c3e78911-b79a-4e5f-8ea2-2835f9edb6a8",
+                "leftValue": "={{ $json.niche }}",
+                "rightValue": "fitness",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          0,
+          -96
+        ],
+        "id": "8f3bea0c-6707-4666-adfb-221f4412182b",
+        "name": "Fitness"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "7a3a9a65-62a5-45af-9223-b448b4cb1ff8",
+                "leftValue": "={{ $json.niche }}",
+                "rightValue": "general motivation",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          224,
+          0
+        ],
+        "id": "6456c426-aaff-44aa-bd38-6ba7f5098554",
+        "name": "General Motivation"
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -448,
+          -192
+        ],
+        "id": "048baa5c-163d-4096-a8ec-e9bc6f121d2f",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Define your array of usernames\nconst usernames = [\"e1\", \"e2\", \"e3\"];\n\n// Return one item containing the entire array\nreturn [\n  {\n    json: {\n      usernames: usernames\n    }\n  }\n];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          448,
+          -384
+        ],
+        "id": "dc89a25d-1baa-4d1d-9906-7646af90bae9",
+        "name": "Entrepreneur usernames"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=You are a professional short-form video editor and creative director.\n\nYour task:\nGiven the input JSON (representing a base video specification), generate multiple **variant JSON objects** — one for each username provided in the Available Usernames list.\n\n### Instructions:\n1. For each username in Available Usernames, create a copy of the input JSON.\n2. Replace the value of `\"watermark\"` inside `request_json` with that username (e.g. `\"@username\"`).\n3. Keep all other fields and values identical to the input.\n4. Output a **JSON array** containing all variants.\n5. Ensure the output is valid JSON — no comments, markdown, or text outside the array.\n6. For the variations, change only the watermark and the clip description parameters. You may also change the individual clip url parameters accordingly. You may also change the main \"caption\" parameter.\n7. Make sure the clips descriptions are not the same across all the variants, while still adhering to the main vibe.\n\n\n### Example Output Structure:\n[\n  {\n    \"endpoint\": \"/vid-1.3\",\n    \"request_json\": {\n      ... (same as input, but watermark replaced with \"@first_username\")\n    },\n    \"caption\": \"...\",\n    \"description\": \"...\",\n    \"niche\": \"...\"\n  },\n  {\n    \"endpoint\": \"/vid-1.3\",\n    \"request_json\": {\n      ... (same as input, but watermark replaced with \"@second_username\")\n    },\n    ...\n  }\n]\n\n### Input JSON:\n{{ JSON.stringify($node[\"When Executed by Another Workflow\"].json, null, 2) }}\n\n\n### Available Usernames:\n{{ $json.usernames }}\n\nif \"transcription\": true is encountered in the input json, call the Transcription tool to get the transcription and then update the clips timing accordingly. it is extremely essential that the slips timings match with that in the audio, if \"transcription\": true.\n\nyou are allowed to change the amount of text in each clip, number of clips, etc. do whatever it takes to make the text match the audio perfectly.\n\nTo use the Transcription tool, pass the audio url to the Transcription tool. for example:\n\n\n[\n{\n\"query\": \n\"{{ $('When Executed by Another Workflow').item.json.request_json.audioUrl }}\"\n}\n]",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2.2,
+        "position": [
+          672,
+          -192
+        ],
+        "id": "bed9feb5-dbe6-4961-996d-332e17fc9628",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "typeVersion": 1,
+        "position": [
+          640,
+          128
+        ],
+        "id": "30ce7fca-ce6c-4258-aec4-6b69631326c9",
+        "name": "Google Gemini Chat Model",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "0Y3IITMeiDyvu2zW",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Get the text output\nconst raw = $json.output; // e.g. \"```json\\n[ {...} ]\\n```\"\n\n// Remove markdown code block markers and whitespace\nconst cleaned = raw\n  .replace(/^```json\\s*/i, '')  // remove starting ```json\n  .replace(/```$/i, '')         // remove ending ```\n  .trim();\n\n// Parse the string back into an array of objects\nlet parsed;\ntry {\n  parsed = JSON.parse(cleaned);\n} catch (error) {\n  throw new Error(\"Failed to parse JSON: \" + error.message + \"\\nCleaned text:\\n\" + cleaned);\n}\n\n// Return one item per variant\nreturn parsed.map(item => ({ json: item }));\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1024,
+          -192
+        ],
+        "id": "686ad1e2-f05e-479c-98fa-7880c0f8df56",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Define your array of usernames\nconst usernames = [\"f1\", \"f2\", \"f3\"];\n\n// Return one item containing the entire array\nreturn [\n  {\n    json: {\n      usernames: usernames\n    }\n  }\n];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          448,
+          -192
+        ],
+        "id": "b8dbc8b8-7a0b-4fa1-a679-85beef74cd99",
+        "name": "Fitness Usernames"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Define your array of usernames\nconst usernames = [\"m1\", \"m2\", \"m3\"];\n\n// Return one item containing the entire array\nreturn [\n  {\n    json: {\n      usernames: usernames\n    }\n  }\n];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          448,
+          0
+        ],
+        "id": "91929337-afd8-49fb-9cf1-d1a4ef010466",
+        "name": "Motivation Usernames"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "6Xc0iVUUnEutpnpq",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/6Xc0iVUUnEutpnpq",
+            "cachedResultName": "Transcription"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.2,
+        "position": [
+          848,
+          128
+        ],
+        "id": "db4f05df-b728-4f63-8283-66997a73652d",
+        "name": "Transcription"
+      }
+    ],
+    "connections": {
+      "Entrepreneur": {
+        "main": [
+          [
+            {
+              "node": "Entrepreneur usernames",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Fitness",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fitness": {
+        "main": [
+          [
+            {
+              "node": "Fitness Usernames",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "General Motivation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Entrepreneur",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "General Motivation": {
+        "main": [
+          [
+            {
+              "node": "Motivation Usernames",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Entrepreneur usernames": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fitness Usernames": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Motivation Usernames": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Transcription": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}
