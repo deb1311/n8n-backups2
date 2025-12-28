@@ -1,0 +1,841 @@
+{
+  "updatedAt": "2025-12-28T21:06:00.755Z",
+  "createdAt": "2025-12-28T20:29:25.889Z",
+  "id": "DzChCSlZ5mu2SvvH",
+  "name": "Audio & 360p Extraction (Cloud Run API)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "url"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -800,
+        -64
+      ],
+      "id": "79520fbf-bf9a-4c2f-9fd8-b2dcdd486003",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://media-processor-api-519298355551.us-central1.run.app/process-video",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ videoURL: $json.url, outputName: $execution.id }) }}",
+        "options": {
+          "timeout": 600000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -560,
+        -64
+      ],
+      "id": "0cb777e3-681e-4654-bbc7-dccbd8207c01",
+      "name": "Process Video API"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.audioURL }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        -160
+      ],
+      "id": "2836f8cc-87f1-4326-ac86-7ca23c3e19db",
+      "name": "Download Audio"
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "assets",
+        "fileName": "={{ $execution.id }}_audio.mp3",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -160
+      ],
+      "id": "b5b036ff-83c3-4be3-9492-4b13862ab00e",
+      "name": "Upload Audio to S3",
+      "credentials": {
+        "s3": {
+          "id": "qPRJo0yK63YYqCLJ",
+          "name": "S3 account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "audio-url-001",
+              "name": "audioURL",
+              "value": "=https://vllxucytucjyflsenjmz.supabase.co/storage/v1/object/public/assets/{{ $execution.id }}_audio.mp3",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        -160
+      ],
+      "id": "bf3961e0-6be1-4da2-aa85-80fb5ab49659",
+      "name": "Audio URL"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        400,
+        -64
+      ],
+      "id": "ff72e518-5b5a-4da0-930e-5599fb3669c0",
+      "name": "Merge Results"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "final-audio",
+              "name": "audioURL",
+              "value": "={{ $json.audioURL }}",
+              "type": "string"
+            },
+            {
+              "id": "final-video",
+              "name": "video360pURL",
+              "value": "={{ $json.video360pURL }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        -64
+      ],
+      "id": "9152b62e-bfee-4b70-8ee4-292b516b62c6",
+      "name": "Output URLs"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "video-url-001",
+              "name": "video360pURL",
+              "value": "=https://vllxucytucjyflsenjmz.supabase.co/storage/v1/object/public/assets/{{ $execution.id }}_360p.mp4",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        48
+      ],
+      "id": "5beece67-5381-4170-9b1c-797f605d0777",
+      "name": "360p Video URL"
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "assets",
+        "fileName": "={{ $execution.id }}_360p.mp4",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        48
+      ],
+      "id": "eaa69a80-07da-4989-8de7-7afe2e2e23ff",
+      "name": "Upload 360p Video to S3",
+      "credentials": {
+        "s3": {
+          "id": "qPRJo0yK63YYqCLJ",
+          "name": "S3 account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.video360pURL }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        48
+      ],
+      "id": "8c45198c-996a-45f7-b553-183bc7c349d8",
+      "name": "Download 360p Video"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "=Analyze this video and return API-ready JSON.\n\n## URLS:\n- audioUrl: \"{{ $json.audioURL }}\"\n- videoUrl/imageUrl/original: \"{{ $json.video360pURL }}\"\n\n## ENDPOINT SELECTION:\n- Single static image with text → `/create-video-style2`\n- Single video + text overlay → `/create-video-vid-1`\n- Multiple clips or scenes → `/vid-1.3`\n- Timed captions only (no static quote) → `/vid-1.4`\n- Cinematic/professional effects → `/vid-1.5`\n\n## OUTPUT SCHEMAS:\n\n### Style Endpoints (single image):\n{\"endpoint\":\"/create-video-style2\",\"request_json\":{\"quote\":\"<main_text>\",\"author\":\"<author_or_null>\",\"watermark\":\"@username\",\"imageUrl\":\"<video_url>\",\"audioUrl\":\"<audio_url>\",\"original\":\"<video_url>\",\"duration\":<total_seconds>},\"caption\":\"<10-15 word social caption with hashtags>\",\"description\":\"<detailed: theme, vibe, meaning, quotes>\",\"niche\":\"entrepreneur|fitness|general motivation\",\"transcription\":false}\n\n### Vid-1 (single video):\n{\"endpoint\":\"/create-video-vid-1\",\"request_json\":{\"quote\":\"<main_text>\",\"author\":\"<author_or_null>\",\"watermark\":\"@username\",\"videoUrl\":\"<video_url>\",\"audioUrl\":\"<audio_url>\",\"original\":\"<video_url>\",\"duration\":<total_seconds>},\"caption\":\"<social caption>\",\"description\":\"<detailed description>\",\"niche\":\"<niche>\",\"transcription\":false}\n\n### Vid-1.3 (multi-clip with optional captions):\n{\"endpoint\":\"/vid-1.3\",\"request_json\":{\"quote\":\"<main_text_or_null>\",\"watermark\":\"@username\",\"audioUrl\":\"<audio_url>\",\"original\":\"<video_url>\",\"clips\":[{\"videoUrl\":\"<video_url>\",\"begin\":<source_start>,\"start\":<timeline_pos>,\"duration\":<clip_length>,\"volume\":100,\"description\":\"<clip_desc>\"}],\"captions\":[{\"text\":\"<timed_caption>\",\"start\":<when_appears>,\"duration\":<how_long>}]},\"caption\":\"<social caption>\",\"description\":\"<detailed description>\",\"niche\":\"<niche>\",\"transcription\":false}\n\n### Vid-1.4 (captions only, no static quote):\n{\"endpoint\":\"/vid-1.4\",\"request_json\":{\"watermark\":\"@username\",\"audioUrl\":\"<audio_url>\",\"original\":\"<video_url>\",\"clips\":[{\"videoUrl\":\"<video_url>\",\"begin\":0,\"start\":0,\"duration\":<clip_length>,\"volume\":100,\"description\":\"<clip_desc>\"}],\"captions\":[{\"text\":\"<caption>\",\"start\":<sec>,\"duration\":<sec>}]},\"caption\":\"<social caption>\",\"description\":\"<detailed description>\",\"niche\":\"<niche>\",\"transcription\":false}\n\n### Vid-1.5 (with overlay effects):\n{\"endpoint\":\"/vid-1.5\",\"request_json\":{\"watermark\":\"@username\",\"audioUrl\":\"<audio_url>\",\"original\":\"<video_url>\",\"overlay\":true,\"clips\":[{\"videoUrl\":\"<video_url>\",\"begin\":0,\"start\":0,\"duration\":<clip_length>,\"volume\":100,\"description\":\"<clip_desc>\"}],\"captions\":[{\"text\":\"<caption>\",\"start\":<sec>,\"duration\":<sec>}]},\"caption\":\"<social caption>\",\"description\":\"<detailed description>\",\"niche\":\"<niche>\",\"transcription\":false}\n\n## RULES:\n- `transcription`: true ONLY if spoken words appear as on-screen text\n- `begin`: timestamp in source video to start from\n- `start`: position in final output timeline\n- `description`: DETAILED - theme, vibe, meaning, mood, quotes\n- Use the EXACT URLs provided above\n- Return ONLY valid JSON, no markdown",
+        "videoUrls": "={{ $json.video360pURL }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -64
+      ],
+      "id": "90eaeda3-f167-4b84-af23-6f68c82a5463",
+      "name": "Analyze Video",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ORUwPwaZTuQsBcdf",
+          "name": "Gemini Free"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.item.json;\nconst text = item.content.parts[0].text;\nconst cleaned = text.replace(/```json\\n?/gi, '').replace(/```\\n?/gi, '').trim();\nconst data = JSON.parse(cleaned);\nreturn { json: data };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        -64
+      ],
+      "id": "16c224b2-0b66-451b-b26d-448e1212e041",
+      "name": "Parse JSON"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Process Video API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Video API": {
+      "main": [
+        [
+          {
+            "node": "Download Audio",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download 360p Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Audio": {
+      "main": [
+        [
+          {
+            "node": "Upload Audio to S3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Audio to S3": {
+      "main": [
+        [
+          {
+            "node": "Audio URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audio URL": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Results": {
+      "main": [
+        [
+          {
+            "node": "Output URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "360p Video URL": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Upload 360p Video to S3": {
+      "main": [
+        [
+          {
+            "node": "360p Video URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download 360p Video": {
+      "main": [
+        [
+          {
+            "node": "Upload 360p Video to S3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output URLs": {
+      "main": [
+        [
+          {
+            "node": "Analyze Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Video": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "url": "https://lookaside.fbsbx.com/ig_messaging_cdn/?asset_id=18046765355442417&signature=AYdifAAt-1dRHKnWJDmC7dWHR7pPrQSM1fGYbeqO6ZOZgvfIoGKIxWQLYlvocPwZ2Wc2uNb7fuxoPOpjtpRiN1h3k0gNQ12u1BBi4T8PYJQeZ9wYp-Zxo_BtqzHe1j-5hmpxCog45t3IiYIJJFkAcS9nPSsG_Hr-y5ZfTmIZSbzfOFax9Q-ZwfRptkm7W3MydRwi9a7NLNyg_AqOPgZM0gbgimjveI0w"
+        },
+        "binary": {
+          "data": {
+            "mimeType": "video/mp4",
+            "fileType": "video",
+            "fileExtension": "mp4",
+            "data": "filesystem-v2",
+            "directory": "https://lookaside.fbsbx.com/ig_messaging_cdn/?asset_id=18046765355442417&signature=AYdifAAt-1dRHKnWJDmC7dWHR7pPrQSM1fGYbeqO6ZOZgvfIoGKIxWQLYlvocPwZ2Wc2uNb7fuxoPOpjtpRiN1h3k0gNQ12u1BBi4T8PYJQeZ9wYp-Zxo_BtqzHe1j-5hmpxCog45t3IiYIJJFkAcS9nPSsG_Hr-y5ZfTmIZSbzfOFax9Q-ZwfRptkm7W3MydRwi9a7NLNyg_AqOPgZM0gbgimjveI0w",
+            "fileName": "AQPbXdbkQT_Fw5dEuNmMFpYR3MUlzLI_pLOZQgaAogWmm9OhhGmTW5ywEfM6QoB9pYn4B58ebzONOsemuzfTVrXpazyGMe0ZTzZeJHg.mp4",
+            "id": "filesystem-v2:workflows/KfJT1b9qUCm9Nln0/executions/447/binary_data/07671669-1644-4be9-9940-c3139c73d6d6",
+            "fileSize": "6.32 MB"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "168a1a47-9a5e-43f9-9563-1bc67a95095c",
+  "activeVersionId": "168a1a47-9a5e-43f9-9563-1bc67a95095c",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-12-28T20:29:25.963Z",
+      "createdAt": "2025-12-28T20:29:25.963Z",
+      "role": "workflow:owner",
+      "workflowId": "DzChCSlZ5mu2SvvH",
+      "projectId": "bnvMSIIUgNfVjAJN"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-28T21:06:06.000Z",
+    "createdAt": "2025-12-28T21:06:00.757Z",
+    "versionId": "168a1a47-9a5e-43f9-9563-1bc67a95095c",
+    "workflowId": "DzChCSlZ5mu2SvvH",
+    "nodes": [
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "url"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -800,
+          -64
+        ],
+        "id": "79520fbf-bf9a-4c2f-9fd8-b2dcdd486003",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://media-processor-api-519298355551.us-central1.run.app/process-video",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ videoURL: $json.url, outputName: $execution.id }) }}",
+          "options": {
+            "timeout": 600000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -560,
+          -64
+        ],
+        "id": "0cb777e3-681e-4654-bbc7-dccbd8207c01",
+        "name": "Process Video API"
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.audioURL }}",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "file"
+              }
+            },
+            "timeout": 300000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -320,
+          -160
+        ],
+        "id": "2836f8cc-87f1-4326-ac86-7ca23c3e19db",
+        "name": "Download Audio"
+      },
+      {
+        "parameters": {
+          "operation": "upload",
+          "bucketName": "assets",
+          "fileName": "={{ $execution.id }}_audio.mp3",
+          "additionalFields": {}
+        },
+        "type": "n8n-nodes-base.s3",
+        "typeVersion": 1,
+        "position": [
+          -80,
+          -160
+        ],
+        "id": "b5b036ff-83c3-4be3-9492-4b13862ab00e",
+        "name": "Upload Audio to S3",
+        "credentials": {
+          "s3": {
+            "id": "qPRJo0yK63YYqCLJ",
+            "name": "S3 account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "audio-url-001",
+                "name": "audioURL",
+                "value": "=https://vllxucytucjyflsenjmz.supabase.co/storage/v1/object/public/assets/{{ $execution.id }}_audio.mp3",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          160,
+          -160
+        ],
+        "id": "bf3961e0-6be1-4da2-aa85-80fb5ab49659",
+        "name": "Audio URL"
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "combineBy": "combineAll",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          400,
+          -64
+        ],
+        "id": "ff72e518-5b5a-4da0-930e-5599fb3669c0",
+        "name": "Merge Results"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "final-audio",
+                "name": "audioURL",
+                "value": "={{ $json.audioURL }}",
+                "type": "string"
+              },
+              {
+                "id": "final-video",
+                "name": "video360pURL",
+                "value": "={{ $json.video360pURL }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          640,
+          -64
+        ],
+        "id": "9152b62e-bfee-4b70-8ee4-292b516b62c6",
+        "name": "Output URLs"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "video-url-001",
+                "name": "video360pURL",
+                "value": "=https://vllxucytucjyflsenjmz.supabase.co/storage/v1/object/public/assets/{{ $execution.id }}_360p.mp4",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          160,
+          48
+        ],
+        "id": "5beece67-5381-4170-9b1c-797f605d0777",
+        "name": "360p Video URL"
+      },
+      {
+        "parameters": {
+          "operation": "upload",
+          "bucketName": "assets",
+          "fileName": "={{ $execution.id }}_360p.mp4",
+          "additionalFields": {}
+        },
+        "type": "n8n-nodes-base.s3",
+        "typeVersion": 1,
+        "position": [
+          -80,
+          48
+        ],
+        "id": "eaa69a80-07da-4989-8de7-7afe2e2e23ff",
+        "name": "Upload 360p Video to S3",
+        "credentials": {
+          "s3": {
+            "id": "qPRJo0yK63YYqCLJ",
+            "name": "S3 account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.video360pURL }}",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "file"
+              }
+            },
+            "timeout": 300000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -320,
+          48
+        ],
+        "id": "8c45198c-996a-45f7-b553-183bc7c349d8",
+        "name": "Download 360p Video"
+      },
+      {
+        "parameters": {
+          "resource": "video",
+          "operation": "analyze",
+          "modelId": {
+            "__rl": true,
+            "value": "models/gemini-2.5-flash",
+            "mode": "list",
+            "cachedResultName": "models/gemini-2.5-flash"
+          },
+          "text": "=Analyze this video and return API-ready JSON.\n\n## URLS:\n- audioUrl: \"{{ $json.audioURL }}\"\n- videoUrl/imageUrl/original: \"{{ $json.video360pURL }}\"\n\n## ENDPOINT SELECTION:\n- Single static image with text → `/create-video-style2`\n- Single video + text overlay → `/create-video-vid-1`\n- Multiple clips or scenes → `/vid-1.3`\n- Timed captions only (no static quote) → `/vid-1.4`\n- Cinematic/professional effects → `/vid-1.5`\n\n## OUTPUT SCHEMAS:\n\n### Style Endpoints (single image):\n{\"endpoint\":\"/create-video-style2\",\"request_json\":{\"quote\":\"<main_text>\",\"author\":\"<author_or_null>\",\"watermark\":\"@username\",\"imageUrl\":\"<video_url>\",\"audioUrl\":\"<audio_url>\",\"original\":\"<video_url>\",\"duration\":<total_seconds>},\"caption\":\"<10-15 word social caption with hashtags>\",\"description\":\"<detailed: theme, vibe, meaning, quotes>\",\"niche\":\"entrepreneur|fitness|general motivation\",\"transcription\":false}\n\n### Vid-1 (single video):\n{\"endpoint\":\"/create-video-vid-1\",\"request_json\":{\"quote\":\"<main_text>\",\"author\":\"<author_or_null>\",\"watermark\":\"@username\",\"videoUrl\":\"<video_url>\",\"audioUrl\":\"<audio_url>\",\"original\":\"<video_url>\",\"duration\":<total_seconds>},\"caption\":\"<social caption>\",\"description\":\"<detailed description>\",\"niche\":\"<niche>\",\"transcription\":false}\n\n### Vid-1.3 (multi-clip with optional captions):\n{\"endpoint\":\"/vid-1.3\",\"request_json\":{\"quote\":\"<main_text_or_null>\",\"watermark\":\"@username\",\"audioUrl\":\"<audio_url>\",\"original\":\"<video_url>\",\"clips\":[{\"videoUrl\":\"<video_url>\",\"begin\":<source_start>,\"start\":<timeline_pos>,\"duration\":<clip_length>,\"volume\":100,\"description\":\"<clip_desc>\"}],\"captions\":[{\"text\":\"<timed_caption>\",\"start\":<when_appears>,\"duration\":<how_long>}]},\"caption\":\"<social caption>\",\"description\":\"<detailed description>\",\"niche\":\"<niche>\",\"transcription\":false}\n\n### Vid-1.4 (captions only, no static quote):\n{\"endpoint\":\"/vid-1.4\",\"request_json\":{\"watermark\":\"@username\",\"audioUrl\":\"<audio_url>\",\"original\":\"<video_url>\",\"clips\":[{\"videoUrl\":\"<video_url>\",\"begin\":0,\"start\":0,\"duration\":<clip_length>,\"volume\":100,\"description\":\"<clip_desc>\"}],\"captions\":[{\"text\":\"<caption>\",\"start\":<sec>,\"duration\":<sec>}]},\"caption\":\"<social caption>\",\"description\":\"<detailed description>\",\"niche\":\"<niche>\",\"transcription\":false}\n\n### Vid-1.5 (with overlay effects):\n{\"endpoint\":\"/vid-1.5\",\"request_json\":{\"watermark\":\"@username\",\"audioUrl\":\"<audio_url>\",\"original\":\"<video_url>\",\"overlay\":true,\"clips\":[{\"videoUrl\":\"<video_url>\",\"begin\":0,\"start\":0,\"duration\":<clip_length>,\"volume\":100,\"description\":\"<clip_desc>\"}],\"captions\":[{\"text\":\"<caption>\",\"start\":<sec>,\"duration\":<sec>}]},\"caption\":\"<social caption>\",\"description\":\"<detailed description>\",\"niche\":\"<niche>\",\"transcription\":false}\n\n## RULES:\n- `transcription`: true ONLY if spoken words appear as on-screen text\n- `begin`: timestamp in source video to start from\n- `start`: position in final output timeline\n- `description`: DETAILED - theme, vibe, meaning, mood, quotes\n- Use the EXACT URLs provided above\n- Return ONLY valid JSON, no markdown",
+          "videoUrls": "={{ $json.video360pURL }}",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.googleGemini",
+        "typeVersion": 1,
+        "position": [
+          960,
+          -64
+        ],
+        "id": "90eaeda3-f167-4b84-af23-6f68c82a5463",
+        "name": "Analyze Video",
+        "retryOnFail": true,
+        "waitBetweenTries": 3000,
+        "credentials": {
+          "googlePalmApi": {
+            "id": "ORUwPwaZTuQsBcdf",
+            "name": "Gemini Free"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const item = $input.item.json;\nconst text = item.content.parts[0].text;\nconst cleaned = text.replace(/```json\\n?/gi, '').replace(/```\\n?/gi, '').trim();\nconst data = JSON.parse(cleaned);\nreturn { json: data };"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1264,
+          -64
+        ],
+        "id": "16c224b2-0b66-451b-b26d-448e1212e041",
+        "name": "Parse JSON"
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Process Video API",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Process Video API": {
+        "main": [
+          [
+            {
+              "node": "Download Audio",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Download 360p Video",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download Audio": {
+        "main": [
+          [
+            {
+              "node": "Upload Audio to S3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload Audio to S3": {
+        "main": [
+          [
+            {
+              "node": "Audio URL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Audio URL": {
+        "main": [
+          [
+            {
+              "node": "Merge Results",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge Results": {
+        "main": [
+          [
+            {
+              "node": "Output URLs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "360p Video URL": {
+        "main": [
+          [
+            {
+              "node": "Merge Results",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Upload 360p Video to S3": {
+        "main": [
+          [
+            {
+              "node": "360p Video URL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download 360p Video": {
+        "main": [
+          [
+            {
+              "node": "Upload 360p Video to S3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Output URLs": {
+        "main": [
+          [
+            {
+              "node": "Analyze Video",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Analyze Video": {
+        "main": [
+          [
+            {
+              "node": "Parse JSON",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Debabrata Maitra",
+    "name": "v7",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": []
+}

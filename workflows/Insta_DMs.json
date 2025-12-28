@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2025-11-14T13:08:35.000Z",
+  "updatedAt": "2025-12-28T21:02:32.548Z",
   "createdAt": "2025-11-07T18:51:21.243Z",
   "id": "KfJT1b9qUCm9Nln0",
   "name": "Insta DMs",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -91,34 +91,6 @@
       ],
       "id": "193c235f-9ef0-4aca-913d-21df9043efc5",
       "name": "HTTP Request"
-    },
-    {
-      "parameters": {
-        "workflowId": {
-          "__rl": true,
-          "value": "bQ54EfUxbMNWRkTc",
-          "mode": "list",
-          "cachedResultUrl": "/workflow/bQ54EfUxbMNWRkTc",
-          "cachedResultName": "Gemini logic 2"
-        },
-        "workflowInputs": {
-          "mappingMode": "defineBelow",
-          "value": {},
-          "matchingColumns": [],
-          "schema": [],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": true
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.executeWorkflow",
-      "typeVersion": 1.3,
-      "position": [
-        576,
-        128
-      ],
-      "id": "3294c3e1-99b2-430a-b6e3-ac3e2ea7afea",
-      "name": "Call 'Gemini logic 2'"
     },
     {
       "parameters": {
@@ -246,6 +218,49 @@
       "id": "952f9641-d4fc-45ec-9731-0c60dcee45f9",
       "name": "When clicking ‘Execute workflow’",
       "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "DzChCSlZ5mu2SvvH",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/DzChCSlZ5mu2SvvH",
+          "cachedResultName": "Audio & 360p Extraction (Cloud Run API)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $json.body.entry[0].messaging[0].message.attachments[0].payload.url }}"
+          },
+          "matchingColumns": [
+            "url"
+          ],
+          "schema": [
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        128
+      ],
+      "id": "3294c3e1-99b2-430a-b6e3-ac3e2ea7afea",
+      "name": "Call 'Audio & 360p Extraction (Cloud Run API)'"
     }
   ],
   "connections": {
@@ -271,18 +286,7 @@
       "main": [
         [
           {
-            "node": "Call 'Gemini logic 2'",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Call 'Gemini logic 2'": {
-      "main": [
-        [
-          {
-            "node": "Call 'Variants'",
+            "node": "Call 'Audio & 360p Extraction (Cloud Run API)'",
             "type": "main",
             "index": 0
           }
@@ -338,7 +342,18 @@
       "main": [
         [
           {
-            "node": "Call 'Gemini logic 2'",
+            "node": "Call 'Audio & 360p Extraction (Cloud Run API)'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Audio & 360p Extraction (Cloud Run API)'": {
+      "main": [
+        [
+          {
+            "node": "Call 'Variants'",
             "type": "main",
             "index": 0
           }
@@ -356,8 +371,8 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "316c5291-b37c-483b-affe-c966e91834ae",
-  "activeVersionId": null,
+  "versionId": "996679ef-fc52-42c1-b726-d306a24e4488",
+  "activeVersionId": "996679ef-fc52-42c1-b726-d306a24e4488",
   "triggerCount": 1,
   "shared": [
     {
@@ -368,6 +383,371 @@
       "projectId": "bnvMSIIUgNfVjAJN"
     }
   ],
-  "activeVersion": null,
+  "activeVersion": {
+    "updatedAt": "2025-12-28T21:07:34.000Z",
+    "createdAt": "2025-12-28T21:02:32.551Z",
+    "versionId": "996679ef-fc52-42c1-b726-d306a24e4488",
+    "workflowId": "KfJT1b9qUCm9Nln0",
+    "nodes": [
+      {
+        "parameters": {
+          "multipleMethods": true,
+          "path": "32c0d16d-c135-47ea-9f3b-72610f142822",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "9a4efde2-f036-4d2f-9100-b55da7cc9f3a",
+        "name": "Webhook",
+        "webhookId": "32c0d16d-c135-47ea-9f3b-72610f142822"
+      },
+      {
+        "parameters": {
+          "respondWith": "text",
+          "responseBody": "={{ $json.query['hub.challenge'] }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          304,
+          -160
+        ],
+        "id": "2e05be9e-7dc6-47f2-9b0d-420bb34b070b",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "resource": "databasePage",
+          "databaseId": {
+            "__rl": true,
+            "value": "2a451a6d-097f-8059-be8a-ff2a436103d9",
+            "mode": "list",
+            "cachedResultName": "Raw",
+            "cachedResultUrl": "https://www.notion.so/2a451a6d097f8059be8aff2a436103d9"
+          },
+          "title": "={{ $json.body.entry[0].messaging[0].message.attachments[0].payload.title + \" \" + $json.body.entry[0].messaging[0].sender.id }}  ",
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "Source|rich_text",
+                "textContent": "={{ $json.body.entry[0].messaging[0].message.attachments[0].type }}"
+              },
+              {
+                "key": "URL|rich_text",
+                "textContent": "={{ $json.body.entry[0].messaging[0].message.attachments[0].payload.url }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2,
+        "position": [
+          688,
+          -432
+        ],
+        "id": "334aea57-10e5-4183-9cd5-9de8b265f3a5",
+        "name": "Raw",
+        "credentials": {
+          "notionApi": {
+            "id": "NsYBQ9PiZRbvlVC9",
+            "name": "Notion account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.body.entry[0].messaging[0].message.attachments[0].payload.url }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          368,
+          128
+        ],
+        "id": "193c235f-9ef0-4aca-913d-21df9043efc5",
+        "name": "HTTP Request"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "bZxFUrOPmVEbMTkA",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/bZxFUrOPmVEbMTkA",
+            "cachedResultName": "Variants"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {}
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          784,
+          128
+        ],
+        "id": "0bc83f53-dc73-46d0-920d-ce8cbafc437f",
+        "name": "Call 'Variants'"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          1440,
+          128
+        ],
+        "id": "71d1aa66-c1a9-4b84-9b6d-17d5385864d7",
+        "name": "Loop Over Items"
+      },
+      {
+        "parameters": {
+          "resource": "databasePage",
+          "databaseId": {
+            "__rl": true,
+            "value": "29451a6d-097f-8008-aa06-f33a562cfa0b",
+            "mode": "list",
+            "cachedResultName": "Editor",
+            "cachedResultUrl": "https://www.notion.so/29451a6d097f8008aa06f33a562cfa0b"
+          },
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "Username|title",
+                "title": "=\n{{ $json.JSON.watermark }}"
+              },
+              {
+                "key": "Original Caption|rich_text",
+                "textContent": "={{ $('Webhook').item.json.body.entry[0].messaging[0].message.attachments[0].payload.title }}"
+              },
+              {
+                "key": "Caption|rich_text",
+                "textContent": "={{ $('Loop Over Items').item.json.caption }}"
+              },
+              {
+                "key": "Endpoint|rich_text",
+                "textContent": "={{ $('Loop Over Items').item.json.endpoint }}"
+              },
+              {
+                "key": "ID|number",
+                "numberValue": "={{ $json.id }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2,
+        "position": [
+          2064,
+          144
+        ],
+        "id": "8f3a38a4-998b-485c-9077-36d33b1e28ec",
+        "name": "Create a database page",
+        "credentials": {
+          "notionApi": {
+            "id": "NsYBQ9PiZRbvlVC9",
+            "name": "Notion account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "vid-data",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "JSON",
+                "fieldValue": "={{ $json.request_json }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1728,
+          144
+        ],
+        "id": "e7c8c96b-ca9c-4a92-bbbb-762b7c394250",
+        "name": "Create a row",
+        "credentials": {
+          "supabaseApi": {
+            "id": "j84qLlabBvYbnIAd",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -48,
+          368
+        ],
+        "id": "952f9641-d4fc-45ec-9731-0c60dcee45f9",
+        "name": "When clicking ‘Execute workflow’",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "DzChCSlZ5mu2SvvH",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/DzChCSlZ5mu2SvvH",
+            "cachedResultName": "Audio & 360p Extraction (Cloud Run API)"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "url": "={{ $json.body.entry[0].messaging[0].message.attachments[0].payload.url }}"
+            },
+            "matchingColumns": [
+              "url"
+            ],
+            "schema": [
+              {
+                "id": "url",
+                "displayName": "url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          576,
+          128
+        ],
+        "id": "3294c3e1-99b2-430a-b6e3-ac3e2ea7afea",
+        "name": "Call 'Audio & 360p Extraction (Cloud Run API)'"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Call 'Audio & 360p Extraction (Cloud Run API)'",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Call 'Variants'": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Create a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create a database page": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create a row": {
+        "main": [
+          [
+            {
+              "node": "Create a database page",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Call 'Audio & 360p Extraction (Cloud Run API)'",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Call 'Audio & 360p Extraction (Cloud Run API)'": {
+        "main": [
+          [
+            {
+              "node": "Call 'Variants'",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Debabrata Maitra",
+    "name": "v1",
+    "description": "",
+    "autosaved": false
+  },
   "tags": []
 }
