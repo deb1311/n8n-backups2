@@ -1,0 +1,506 @@
+{
+  "updatedAt": "2025-10-19T20:38:29.000Z",
+  "createdAt": "2025-09-27T13:02:39.961Z",
+  "id": "jOBIEMsDS1phyRt5",
+  "name": "Customer Onboarding Automation - Core Flow",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "id": "webhook-trigger",
+      "name": "New Customer Webhook",
+      "parameters": {
+        "httpMethod": "POST",
+        "options": {},
+        "path": "new-customer-signup",
+        "responseMode": "responseNode"
+      },
+      "position": [
+        250,
+        300
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "set-customer-data",
+      "name": "Set Customer Data",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "customer-id",
+              "name": "customer_id",
+              "type": "string",
+              "value": "={{ $json.customer_id || $now.toMillis() }}"
+            },
+            {
+              "id": "email",
+              "name": "email",
+              "type": "string",
+              "value": "={{ $json.email }}"
+            },
+            {
+              "id": "company",
+              "name": "company",
+              "type": "string",
+              "value": "={{ $json.company }}"
+            },
+            {
+              "id": "firstName",
+              "name": "firstName",
+              "type": "string",
+              "value": "={{ $json.firstName }}"
+            },
+            {
+              "id": "lastName",
+              "name": "lastName",
+              "type": "string",
+              "value": "={{ $json.lastName }}"
+            },
+            {
+              "id": "plan",
+              "name": "plan",
+              "type": "string",
+              "value": "={{ $json.plan || 'standard' }}"
+            },
+            {
+              "id": "signup-date",
+              "name": "signup_date",
+              "type": "string",
+              "value": "={{ $now.toISO() }}"
+            },
+            {
+              "id": "onboarding-status",
+              "name": "onboarding_status",
+              "type": "string",
+              "value": "started"
+            }
+          ]
+        },
+        "duplicateItem": false,
+        "mode": "manual",
+        "options": {}
+      },
+      "position": [
+        450,
+        300
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "continueOnFail": true,
+      "id": "http-enrich-data",
+      "name": "Enrich Company Data",
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "GET",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": false
+            }
+          },
+          "timeout": 10000
+        },
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "domain",
+              "value": "={{ $json.email.split('@')[1] }}"
+            }
+          ]
+        },
+        "sendQuery": true,
+        "url": "https://company.clearbit.com/v2/companies/find"
+      },
+      "position": [
+        650,
+        300
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2
+    },
+    {
+      "id": "if-enterprise",
+      "name": "Check If Enterprise",
+      "parameters": {
+        "conditions": {
+          "combinator": "or",
+          "conditions": [
+            {
+              "id": "enterprise-check",
+              "leftValue": "={{ $json.metrics?.employees || 0 }}",
+              "operator": {
+                "operation": "gte",
+                "type": "number"
+              },
+              "rightValue": 50
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          }
+        }
+      },
+      "position": [
+        850,
+        300
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "id": "send-enterprise-email",
+      "name": "Send Enterprise Welcome",
+      "parameters": {
+        "emailType": "html",
+        "message": "<h2>Welcome {{ $('Set Customer Data').item.json.firstName }}!</h2>\n<p>Thank you for choosing our Customer Success Platform for {{ $('Set Customer Data').item.json.company }}.</p>\n<h3>Your Enterprise Benefits Include:</h3>\n<ul>\n<li>Dedicated Customer Success Manager</li>\n<li>Priority Support Channel</li>\n<li>Custom Integration Support</li>\n<li>Quarterly Business Reviews</li>\n</ul>\n<p><strong>Next Steps:</strong></p>\n<ol>\n<li>Schedule your kickoff call: [CALENDAR_LINK_PLACEHOLDER]</li>\n<li>Access your dashboard: [DASHBOARD_LINK_PLACEHOLDER]</li>\n<li>Review enterprise documentation: [DOCS_LINK_PLACEHOLDER]</li>\n</ol>\n<p>Your Customer Success Manager will reach out within 24 hours.</p>",
+        "options": {},
+        "sendTo": "={{ $('Set Customer Data').item.json.email }}",
+        "subject": "Welcome to Customer Success Platform - Enterprise Onboarding"
+      },
+      "position": [
+        1050,
+        200
+      ],
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1
+    },
+    {
+      "id": "send-standard-email",
+      "name": "Send Standard Welcome",
+      "parameters": {
+        "emailType": "html",
+        "message": "<h2>Welcome {{ $('Set Customer Data').item.json.firstName }}!</h2>\n<p>We're excited to have {{ $('Set Customer Data').item.json.company }} join our platform!</p>\n<h3>Getting Started in 3 Easy Steps:</h3>\n<ol>\n<li><strong>Access Your Dashboard:</strong> [DASHBOARD_LINK_PLACEHOLDER]</li>\n<li><strong>Watch Our Quick Start Video:</strong> [VIDEO_LINK_PLACEHOLDER] (5 minutes)</li>\n<li><strong>Connect Your First Integration:</strong> [INTEGRATION_LINK_PLACEHOLDER]</li>\n</ol>\n<p><strong>Resources:</strong></p>\n<ul>\n<li>Documentation: [DOCS_LINK_PLACEHOLDER]</li>\n<li>Community Forum: [FORUM_LINK_PLACEHOLDER]</li>\n<li>Support: [SUPPORT_LINK_PLACEHOLDER]</li>\n</ul>\n<p>Questions? Reply to this email or chat with us in the app!</p>",
+        "options": {},
+        "sendTo": "={{ $('Set Customer Data').item.json.email }}",
+        "subject": "Welcome to Customer Success Platform - Let's Get Started!"
+      },
+      "position": [
+        1050,
+        400
+      ],
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1
+    },
+    {
+      "id": "wait-2-hours",
+      "name": "Wait 2 Hours",
+      "parameters": {
+        "amount": 2,
+        "unit": "hours"
+      },
+      "position": [
+        1250,
+        300
+      ],
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1
+    },
+    {
+      "continueOnFail": true,
+      "id": "check-activity",
+      "name": "Check Customer Activity",
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_API_TOKEN_PLACEHOLDER"
+            }
+          ]
+        },
+        "method": "GET",
+        "options": {
+          "timeout": 10000
+        },
+        "sendHeaders": true,
+        "url": "https://yourapp.com/api/customers/{{ $('Set Customer Data').item.json.customer_id }}/activity"
+      },
+      "position": [
+        1450,
+        300
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2
+    },
+    {
+      "id": "if-logged-in",
+      "name": "Check If Logged In",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "login-check",
+              "leftValue": "={{ $json.has_logged_in || false }}",
+              "operator": {
+                "operation": "equals",
+                "type": "boolean"
+              },
+              "rightValue": true
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          }
+        }
+      },
+      "position": [
+        1650,
+        300
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "id": "send-success-email",
+      "name": "Send Activation Success",
+      "parameters": {
+        "emailType": "html",
+        "message": "<h2>Fantastic, {{ $('Set Customer Data').item.json.firstName }}!</h2>\n<p>You've successfully logged in and started exploring the platform!</p>\n<h3>Keep the Momentum Going:</h3>\n<ul>\n<li>✅ Complete your profile setup</li>\n<li>📊 Create your first dashboard</li>\n<li>🔗 Connect your data sources</li>\n<li>📈 Set up your success metrics</li>\n</ul>\n<p><strong>Pro Tip:</strong> Companies that complete setup in the first week see 3x better results!</p>\n<p>Need help? Our support team is standing by!</p>",
+        "options": {},
+        "sendTo": "={{ $('Set Customer Data').item.json.email }}",
+        "subject": "🎉 Great Progress with Customer Success Platform!"
+      },
+      "position": [
+        1850,
+        200
+      ],
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1
+    },
+    {
+      "id": "send-nudge-email",
+      "name": "Send Gentle Nudge",
+      "parameters": {
+        "emailType": "html",
+        "message": "<h2>Hi {{ $('Set Customer Data').item.json.firstName }},</h2>\n<p>I noticed you signed up for Customer Success Platform but haven't had a chance to log in yet.</p>\n<p>Is there anything I can help you with to get started?</p>\n<h3>Common questions:</h3>\n<ul>\n<li>Lost your login details? <a href='[RESET_LINK_PLACEHOLDER]'>Reset password here</a></li>\n<li>Not sure where to start? <a href='[CALENDAR_LINK_PLACEHOLDER]'>Book a quick 15-min demo</a></li>\n<li>Technical issues? <a href='[SUPPORT_LINK_PLACEHOLDER]'>Contact support</a></li>\n</ul>\n<p>Remember, we're here to ensure your success!</p>\n<p>Best,<br>Your Customer Success Team</p>",
+        "options": {},
+        "sendTo": "={{ $('Set Customer Data').item.json.email }}",
+        "subject": "Quick question about your Customer Success Platform setup"
+      },
+      "position": [
+        1850,
+        400
+      ],
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1
+    },
+    {
+      "continueOnFail": true,
+      "id": "store-customer-data",
+      "name": "Store Customer Data",
+      "parameters": {
+        "columns": "customer_id,email,company,first_name,last_name,plan,signup_date,onboarding_status,last_activity",
+        "operation": "insert",
+        "options": {},
+        "schema": "public",
+        "table": "customers"
+      },
+      "position": [
+        2050,
+        300
+      ],
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5
+    },
+    {
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "parameters": {
+        "responseCode": 200,
+        "responseData": "firstEntryJson",
+        "responseHeaders": {
+          "entries": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "responseMode": "responseNode"
+      },
+      "position": [
+        450,
+        500
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1
+    }
+  ],
+  "connections": {
+    "Check Customer Activity": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Check If Logged In",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Check If Enterprise": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Send Enterprise Welcome",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Send Standard Welcome",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Check If Logged In": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Send Activation Success",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Send Gentle Nudge",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Enrich Company Data": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Check If Enterprise",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "New Customer Webhook": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Set Customer Data",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Send Activation Success": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Store Customer Data",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Send Enterprise Welcome": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Wait 2 Hours",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Send Gentle Nudge": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Store Customer Data",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Send Standard Welcome": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Wait 2 Hours",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Set Customer Data": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Enrich Company Data",
+            "type": "main"
+          },
+          {
+            "index": 0,
+            "node": "Webhook Response",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Wait 2 Hours": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Check Customer Activity",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "27da9372-9175-4a49-bd5d-59c4493ad803",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-09-27T13:02:40.104Z",
+      "createdAt": "2025-09-27T13:02:40.104Z",
+      "role": "workflow:owner",
+      "workflowId": "jOBIEMsDS1phyRt5",
+      "projectId": "bnvMSIIUgNfVjAJN"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
