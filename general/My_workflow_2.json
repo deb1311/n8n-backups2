@@ -1,0 +1,75 @@
+{
+  "updatedAt": "2025-09-13T13:31:12.000Z",
+  "createdAt": "2025-09-13T13:29:28.364Z",
+  "id": "TVRvRdXNlC5gV12H",
+  "name": "My workflow 2",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 🌤️ Fetch Weather Workflow\n\nThis workflow uses an **HTTP Request** node to fetch the current weather data for London from the `wttr.in` service.\n\nThe URL is set to `https://wttr.in/London?format=j1`, which returns the weather information in JSON format.",
+        "height": 200,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "name": "Workflow Explanation",
+      "position": [
+        240,
+        112
+      ],
+      "id": "generated-b7c63508-38f6-4fba-bfe1-9317115d0806"
+    },
+    {
+      "parameters": {
+        "url": "https://wttr.in/London?format=j1",
+        "options": {
+          "batching": {
+            "values": {}
+          },
+          "allowUnauthorizedCerts": false,
+          "lowercaseHeaders": true,
+          "redirect": {
+            "values": {}
+          },
+          "response": {
+            "values": {}
+          },
+          "pagination": {
+            "values": {}
+          },
+          "proxy": "",
+          "timeout": 10000
+        }
+      },
+      "name": "Fetch London Weather",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        304,
+        304
+      ],
+      "id": "generated-f7446e48-829d-42d7-acb9-f5e7ead6bf00"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "859ac981-7c7d-4d8e-b792-5df02b2c31bd",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-09-13T13:29:28.424Z",
+      "createdAt": "2025-09-13T13:29:28.424Z",
+      "role": "workflow:owner",
+      "workflowId": "TVRvRdXNlC5gV12H",
+      "projectId": "bnvMSIIUgNfVjAJN"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}

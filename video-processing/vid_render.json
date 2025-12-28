@@ -1,0 +1,185 @@
+{
+  "updatedAt": "2025-11-03T16:53:40.000Z",
+  "createdAt": "2025-10-31T10:18:59.291Z",
+  "id": "2MXKWwkMuqFuSAky",
+  "name": "vid render",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0fbf4ce7-84c6-4dec-ae4e-3ef21d61395c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "29451a6d-097f-8008-aa06-f33a562cfa0b",
+          "mode": "list",
+          "cachedResultName": "Editor",
+          "cachedResultUrl": "https://www.notion.so/29451a6d097f8008aa06f33a562cfa0b"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "25e8d929-b205-40e5-8afa-f8f2ea538658",
+      "name": "Get many database pages",
+      "credentials": {
+        "notionApi": {
+          "id": "NsYBQ9PiZRbvlVC9",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "c156519d-6465-465a-86de-c9342164dbb3",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1c92ed4e-d16c-4f0c-9aa0-40932ba93166",
+              "leftValue": "={{ $json.property_status }}",
+              "rightValue": "Confirmed",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        96
+      ],
+      "id": "278da5dc-9927-4500-aa99-da5df8ce560e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://video-editor-api-519298355551.us-central1.run.app/master",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"endpoint\": \"{{ $json.property_endpoint }}\",\n  \"data\": {{ $json.property_json }}\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        80
+      ],
+      "id": "1d10fbb6-6072-4026-8e2f-79d0df2d8104",
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get many database pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many database pages": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "715a5b5d-4ea5-46d3-a3dd-a2ead2ef3792",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-10-31T10:18:59.303Z",
+      "createdAt": "2025-10-31T10:18:59.303Z",
+      "role": "workflow:owner",
+      "workflowId": "2MXKWwkMuqFuSAky",
+      "projectId": "bnvMSIIUgNfVjAJN"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
