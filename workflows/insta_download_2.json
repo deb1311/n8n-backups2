@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2025-11-07T20:00:35.000Z",
+  "updatedAt": "2025-12-28T19:11:23.000Z",
   "createdAt": "2025-11-07T20:00:35.765Z",
   "id": "fRkbkNSHfOF452DL",
   "name": "insta download 2",
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "parameters": {},
@@ -375,7 +375,7 @@
       }
     ]
   },
-  "versionId": "5608ba27-1b30-4cef-85bf-b3b80a89b5ad",
+  "versionId": "c6d68c32-dc36-49b0-a6ca-94ecda34417b",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
