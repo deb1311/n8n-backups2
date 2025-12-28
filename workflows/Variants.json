@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-12-28T19:09:21.938Z",
+  "updatedAt": "2025-12-28T19:09:36.291Z",
   "createdAt": "2025-11-12T08:52:24.089Z",
   "id": "bZxFUrOPmVEbMTkA",
   "name": "Variants",
@@ -359,6 +359,7 @@
       "parameters": {
         "promptType": "define",
         "text": "=Select best media URLs for each variant.\n\nINPUT:\n- Variants: {{ $json.extractData.forAI.numVariants }}\n- Clips per variant: {{ $json.extractData.forAI.numClips }}\n- Clip descriptions: {{ JSON.stringify($json.aiOutput.variants[0]?.clipDescriptions || [$json.extractData.forAI.description]) }}\n- Available media:\n{{ $json.mediaOptions.slice(0, 15).map(m => `[${m.id}] ${m.alt}`).join('\\n') }}\n\nTASK:\nFor each variant, select the best media IDs that match the clip descriptions.\nUse DIFFERENT IDs for each variant when possible.\n\nOUTPUT (JSON only):\n{\n  \"selections\": [\n    {\"variantIndex\": 0, \"mediaIds\": [3, 7, 2]},\n    {\"variantIndex\": 1, \"mediaIds\": [5, 1, 8]}\n  ]\n}\n\nRULES:\n- mediaIds array must have exactly {{ $json.extractData.forAI.numClips }} items\n- Pick IDs that best match clip descriptions\n- Avoid duplicates across variants if possible\n- JSON only, no markdown",
+        "needsFallback": true,
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -848,6 +849,17 @@
           }
         ]
       ]
+    },
+    "Gemini 2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent 2: URL Selector",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -935,7 +947,7 @@
       }
     ]
   },
-  "versionId": "19e9a1e0-060a-4d8d-9e99-3af9ecd2591d",
+  "versionId": "4b98f873-7696-435a-90bf-cad2fc5bc952",
   "activeVersionId": "2716ee42-d356-4bc4-b535-1807c6f416a7",
   "triggerCount": 0,
   "shared": [
