@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-12-28T16:13:14.838Z",
+  "updatedAt": "2025-12-28T19:09:21.938Z",
   "createdAt": "2025-11-12T08:52:24.089Z",
   "id": "bZxFUrOPmVEbMTkA",
   "name": "Variants",
@@ -30,13 +30,12 @@
           },
           "conditions": [
             {
-              "id": "38017c55-034d-4644-baec-0a57b0c05764",
+              "id": "38017c55",
               "leftValue": "={{ $json.niche }}",
               "rightValue": "entrepreneur",
               "operator": {
                 "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
+                "operation": "equals"
               }
             }
           ],
@@ -47,10 +46,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        64,
+        -48,
         -192
       ],
-      "id": "22ae2d0d-3cee-4576-87ab-eb69dd683728",
+      "id": "6dd892b0-aea8-418d-bdbe-4d3c3553726e",
       "name": "Entrepreneur"
     },
     {
@@ -64,13 +63,12 @@
           },
           "conditions": [
             {
-              "id": "c3e78911-b79a-4e5f-8ea2-2835f9edb6a8",
+              "id": "c3e78911",
               "leftValue": "={{ $json.niche }}",
               "rightValue": "fitness",
               "operator": {
                 "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
+                "operation": "equals"
               }
             }
           ],
@@ -81,10 +79,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        240,
+        128,
         16
       ],
-      "id": "01154cf1-7b8d-4ec8-ad44-547b54b8fa33",
+      "id": "73689f40-f14b-4121-94f2-676ffd84f68b",
       "name": "Fitness"
     },
     {
@@ -98,13 +96,12 @@
           },
           "conditions": [
             {
-              "id": "7a3a9a65-62a5-45af-9223-b448b4cb1ff8",
+              "id": "7a3a9a65",
               "leftValue": "={{ $json.niche }}",
               "rightValue": "general motivation",
               "operator": {
                 "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
+                "operation": "equals"
               }
             }
           ],
@@ -115,40 +112,40 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        512,
+        400,
         176
       ],
-      "id": "cee28679-3f59-4fb3-9b51-257c3d7ad30e",
+      "id": "5fdecf19-5a71-4480-b60f-3af98c1ab803",
       "name": "General Motivation"
     },
     {
       "parameters": {
-        "jsCode": "// Extract only the variable parts needed for asset generation\nconst baseJson = $('When Executed by Another Workflow').first().json;\n\nreturn [{\n  json: {\n    // Static structure (preserved for reconstruction)\n    baseStructure: {\n      endpoint: baseJson.endpoint,\n      audioUrl: baseJson.request_json.audioUrl,\n      original: baseJson.request_json.original,\n      quote: baseJson.request_json.quote,\n      description: baseJson.description,\n      niche: baseJson.niche,\n      transcription: baseJson.transcription,\n      caption: baseJson.caption,\n      clips: baseJson.request_json.clips?.map(clip => ({\n        start: clip.start,\n        duration: clip.duration,\n        volume: clip.volume,\n        begin: clip.begin\n      })) || [],\n      captions: baseJson.request_json.captions?.map(caption => ({\n        text: caption.text,\n        start: caption.start,\n        duration: caption.duration\n      })) || []\n    },\n    // Variable data for AI to process\n    variableData: {\n      clipDescriptions: baseJson.request_json.clips?.map(clip => clip.description) || [],\n      captionTexts: baseJson.request_json.captions?.map(caption => caption.text) || [],\n      mainCaption: baseJson.caption,\n      transcriptionRequired: baseJson.transcription,\n      audioUrl: baseJson.request_json.audioUrl\n    },\n    usernames: $input.first().json.usernames\n  }\n}];"
+        "jsCode": "// STEP 1: Extract base data\nconst baseJson = $('When Executed by Another Workflow').first().json;\nconst req = baseJson.request_json;\nconst usernames = $input.first().json.usernames;\n\nconst endpoint = baseJson.endpoint;\nconst isStyleEndpoint = endpoint.includes('style');\nconst isVid1Single = endpoint === '/create-video-vid-1';\nconst isMultiClip = endpoint.includes('vid-1.2') || endpoint.includes('vid-1.3') || endpoint.includes('vid-1.4') || endpoint.includes('vid-1.5');\n\nlet mediaType = 'video';\nif (isStyleEndpoint) mediaType = 'image';\n\nlet numClips = 1;\nif (isMultiClip && req.clips?.length > 0) numClips = req.clips.length;\n\nconst mainDescription = baseJson.description || 'motivational content';\nconst originalCaptions = req.captions?.map(c => c.text) || [];\nconst clipDescriptions = req.clips?.map(c => c.description) || [mainDescription];\n\nreturn [{\n  json: {\n    forAI: {\n      description: mainDescription,\n      numVariants: usernames.length,\n      numClips: numClips,\n      transcriptionRequired: baseJson.transcription || false,\n      audioUrl: req.audioUrl,\n      originalCaptions: originalCaptions,\n      originalMainCaption: baseJson.caption,\n      originalClipDescriptions: clipDescriptions,\n      mediaType: mediaType\n    },\n    baseStructure: {\n      endpoint, audioUrl: req.audioUrl, instagramUrl: req.instagramUrl,\n      original: req.original, quote: req.quote, author: req.author,\n      duration: req.duration, overlay: req.overlay,\n      description: baseJson.description, niche: baseJson.niche,\n      transcription: baseJson.transcription, caption: baseJson.caption,\n      imageUrl: req.imageUrl, videoUrl: req.videoUrl,\n      clips: req.clips?.map(c => ({start: c.start, duration: c.duration, volume: c.volume, begin: c.begin})) || [],\n      captions: req.captions?.map(c => ({text: c.text, start: c.start, duration: c.duration})) || []\n    },\n    endpointType: { isStyleEndpoint, isVid1Single, isMultiClip, mediaType },\n    usernames: usernames\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1312,
+        1216,
         -160
       ],
-      "id": "ee7662cf-6c9b-4768-80ad-35515ce629cb",
-      "name": "Extract Variant Data"
+      "id": "ea258323-a74a-4f82-9c2d-3b490e15b138",
+      "name": "Extract Base Data"
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=You are a media asset generator. Generate variant-specific assets for each username.\n\n## Input:\n- Usernames: {{ $json.usernames }}\n- Clip Descriptions: {{ JSON.stringify($json.variableData.clipDescriptions) }}\n- Transcription Required: {{ $json.variableData.transcriptionRequired }}\n- Audio URL: {{ $json.variableData.audioUrl }}\n\n## Task:\nFor each username, use Pexels tools to find NEW media URLs that match each clip description.\n\n## Transcription Handling:\nIF transcriptionRequired is true:\n1. Call Transcription tool with the audio URL\n2. Return timing adjustments in the output\n\n## Output Format (JSON array only):\n```json\n[\n  {\n    \"username\": \"@username1\",\n    \"clipAssets\": [\n      {\"videoUrl\": \"<pexels_url>\", \"description\": \"<varied_description>\"}\n    ],\n    \"captionAlts\": [\n      {\"alt\": \"<rewritten_caption>\"}\n    ],\n    \"captionVariant\": \"<slightly_varied_main_caption>\",\n    \"timingAdjustments\": null\n  }\n]\n```\n\n## Rules:\n- Use DIFFERENT Pexels URLs for each variant\n- Vary descriptions while keeping same vibe\n- Read Pexels alt tags carefully before selecting\n- Return ONLY the JSON array, no markdown\n\nGenerate assets now:",
+        "text": "=Generate search terms and text rewrites.\n\nINPUT:\n- Description: {{ $json.forAI.description }}\n- Variants: {{ $json.forAI.numVariants }}\n- Clips: {{ $json.forAI.numClips }}\n- Media: {{ $json.forAI.mediaType }}\n- Transcription: {{ $json.forAI.transcriptionRequired }}\n- AudioUrl: {{ $json.forAI.audioUrl }}\n- Captions: {{ JSON.stringify($json.forAI.originalCaptions) }}\n- MainCaption: {{ $json.forAI.originalMainCaption }}\n- ClipDescs: {{ JSON.stringify($json.forAI.originalClipDescriptions) }}\n\nTASKS:\n1. Generate 2-3 Pexels search terms from description\n2. IF transcription=true: Call Transcription tool, return timing\n3. Generate rewrites for EACH variant\n\nOUTPUT (JSON only):\n{\n  \"searchTerms\": [\"term1\", \"term2\"],\n  \"timingAdjustments\": null,\n  \"variants\": [\n    {\n      \"captionAlts\": [\"rewrite1\"],\n      \"description\": \"rewritten desc\",\n      \"mainCaption\": \"rewritten caption #hashtags\",\n      \"clipDescriptions\": [\"clip1\", \"clip2\"]\n    }\n  ]\n}\n\nRULES:\n- searchTerms: key themes (travel, success, fitness)\n- Each variant: DIFFERENT wording, SAME meaning\n- clipDescriptions: exactly {{ $json.forAI.numClips }} items\n- JSON only, no markdown",
         "needsFallback": true,
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        1664,
+        1568,
         -160
       ],
-      "id": "ab88d869-3ddf-44dc-a7f1-2448f4e8d70a",
-      "name": "AI Agent",
+      "id": "3e900ce6-990e-43d4-8bb0-ce1d6a16fda4",
+      "name": "AI Agent 1: Rewrites",
       "retryOnFail": true
     },
     {
@@ -158,11 +155,11 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        1648,
+        1552,
         192
       ],
-      "id": "9ec91184-2d6d-4f38-a114-359e34550053",
-      "name": "Google Gemini Chat Model",
+      "id": "94521cda-fd58-43ad-9baa-e02bdc9fd822",
+      "name": "Gemini 1",
       "credentials": {
         "googlePalmApi": {
           "id": "0Y3IITMeiDyvu2zW",
@@ -172,16 +169,23 @@
     },
     {
       "parameters": {
-        "jsCode": "// Parse AI output and reconstruct full variants\nconst raw = $json.output;\nconst cleaned = raw.replace(/^```json\\s*/i, '').replace(/```$/i, '').trim();\n\nlet assetVariants;\ntry {\n  assetVariants = JSON.parse(cleaned);\n} catch (error) {\n  throw new Error('Failed to parse AI output: ' + error.message);\n}\n\n// Get base structure from Extract node\nconst { baseStructure, variableData } = $('Extract Variant Data').first().json;\n\n// Reconstruct full variants\nconst variants = assetVariants.map(assets => {\n  const variant = {\n    endpoint: baseStructure.endpoint,\n    request_json: {\n      audioUrl: baseStructure.audioUrl,\n      original: baseStructure.original,\n      quote: baseStructure.quote,\n      watermark: assets.username,\n      clips: baseStructure.clips.map((clipTiming, i) => ({\n        ...clipTiming,\n        videoUrl: assets.clipAssets[i]?.videoUrl || variableData.clipDescriptions[i],\n        description: assets.clipAssets[i]?.description || variableData.clipDescriptions[i]\n      }))\n    },\n    caption: assets.captionVariant || baseStructure.caption,\n    description: baseStructure.description,\n    niche: baseStructure.niche,\n    transcription: baseStructure.transcription\n  };\n  \n  // Add captions if they exist\n  if (baseStructure.captions?.length > 0) {\n    variant.request_json.captions = baseStructure.captions.map((captionTiming, i) => ({\n      ...captionTiming,\n      alt: assets.captionAlts?.[i]?.alt\n    }));\n  }\n  \n  // Apply timing adjustments if transcription was processed\n  if (assets.timingAdjustments) {\n    // Merge timing adjustments here if needed\n  }\n  \n  return variant;\n});\n\nreturn variants.map(item => ({ json: item }));"
+        "model": "openai/gpt-oss-20b",
+        "options": {}
       },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
       "position": [
-        2592,
-        -144
+        1376,
+        192
       ],
-      "id": "3c3ec7df-ae77-4110-bdfe-ae3d62a6d0f5",
-      "name": "Reconstruct Variants"
+      "id": "337059a5-1d4c-4fd8-8bec-6e090076a89c",
+      "name": "Groq 1",
+      "credentials": {
+        "groqApi": {
+          "id": "4ZEZ83UlO38Ss7tT",
+          "name": "Groq account"
+        }
+      }
     },
     {
       "parameters": {
@@ -189,106 +193,36 @@
           "__rl": true,
           "value": "6Xc0iVUUnEutpnpq",
           "mode": "list",
-          "cachedResultUrl": "/workflow/6Xc0iVUUnEutpnpq",
           "cachedResultName": "Transcription"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {},
           "matchingColumns": [],
-          "schema": [],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
+          "schema": []
         }
       },
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
       "position": [
-        2336,
+        1696,
         192
       ],
-      "id": "659fcc54-20c2-4e4d-96c7-35030574b0a2",
+      "id": "2e468511-ad5b-436e-9160-69215d7ae8dc",
       "name": "Transcription"
     },
     {
       "parameters": {
-        "url": "https://api.pexels.com/v1/search",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "query",
-              "value": "={{ $fromAI('query', '', 'string') }}"
-            },
-            {
-              "name": "per_page",
-              "value": "={{ $fromAI('per_page', '5', 'string') }}"
-            },
-            {
-              "name": "page",
-              "value": "1"
-            }
-          ]
-        },
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "BPTelSvr7cxNsU51XT1G9QthMZA3rlOvvvQ24XErrFxCHxT5vgJej7LD"
-            }
-          ]
-        },
-        "options": {}
+        "jsCode": "// Parse AI output\nconst raw = $json.output;\nconst cleaned = raw.replace(/^```json\\s*/i, '').replace(/```$/i, '').trim();\nlet aiOutput;\ntry { aiOutput = JSON.parse(cleaned); } catch (e) { throw new Error('Parse error: ' + e.message); }\n\nconst extractData = $('Extract Base Data').first().json;\nreturn [{\n  json: {\n    searchTerms: aiOutput.searchTerms || ['motivational'],\n    mediaType: extractData.forAI.mediaType,\n    numNeeded: Math.max(20, extractData.forAI.numClips * extractData.forAI.numVariants + 10),\n    aiOutput: aiOutput,\n    extractData: extractData\n  }\n}];"
       },
-      "type": "n8n-nodes-base.httpRequestTool",
-      "typeVersion": 4.3,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
-        2208,
-        176
+        1936,
+        -160
       ],
-      "id": "17e14626-3e36-42e1-b037-44fd03b284aa",
-      "name": "Pexels Images"
-    },
-    {
-      "parameters": {
-        "url": "https://api.pexels.com/videos/search",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "query",
-              "value": "={{ $fromAI('query', '', 'string') }}"
-            },
-            {
-              "name": "per_page",
-              "value": "={{ $fromAI('per_page', '5', 'string') }}"
-            },
-            {
-              "name": "page",
-              "value": "1"
-            }
-          ]
-        },
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "BPTelSvr7cxNsU51XT1G9QthMZA3rlOvvvQ24XErrFxCHxT5vgJej7LD"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequestTool",
-      "typeVersion": 4.3,
-      "position": [
-        2080,
-        192
-      ],
-      "id": "740c4d98-0cfe-4251-b71d-97f0e312deda",
-      "name": "Pexels Videos"
+      "id": "a19a00a0-db69-4d0d-ae4d-93a9ae32e155",
+      "name": "Parse AI 1"
     },
     {
       "parameters": {
@@ -301,13 +235,12 @@
           },
           "conditions": [
             {
-              "id": "193486d8-9dd4-432f-adce-974541fd86ac",
-              "leftValue": "={{ $json.output }}",
-              "rightValue": "\"\"",
+              "id": "media-check",
+              "leftValue": "={{ $json.mediaType }}",
+              "rightValue": "image",
               "operator": {
                 "type": "string",
-                "operation": "empty",
-                "singleValue": true
+                "operation": "equals"
               }
             }
           ],
@@ -318,11 +251,144 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2080,
+        2144,
         -160
       ],
-      "id": "6d10aaf6-36d7-49fb-a3db-d37352f63362",
-      "name": "If"
+      "id": "acbbf9ea-4b8f-453d-ab4e-f111fb84e607",
+      "name": "Image or Video?"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pexels.com/v1/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $json.searchTerms[0] }}"
+            },
+            {
+              "name": "per_page",
+              "value": "={{ $json.numNeeded }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "BPTelSvr7cxNsU51XT1G9QthMZA3rlOvvvQ24XErrFxCHxT5vgJej7LD"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2384,
+        -320
+      ],
+      "id": "aa15b22b-74e2-44c2-8790-67d25774ecb9",
+      "name": "Fetch Pexels Images"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pexels.com/videos/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $json.searchTerms[0] }}"
+            },
+            {
+              "name": "per_page",
+              "value": "={{ $json.numNeeded }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "BPTelSvr7cxNsU51XT1G9QthMZA3rlOvvvQ24XErrFxCHxT5vgJej7LD"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2384,
+        -16
+      ],
+      "id": "226e7e8e-d53a-4d1d-9113-789d8758b0d8",
+      "name": "Fetch Pexels Videos"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract image URLs with metadata for AI selection\nconst photos = $json.photos || [];\nconst mediaOptions = photos.map((p, i) => ({\n  id: i,\n  url: p.src?.large2x || p.src?.large || p.src?.original,\n  alt: p.alt || 'Image ' + i\n}));\nconst parseData = $('Parse AI 1').first().json;\nreturn [{ json: { mediaOptions, mediaType: 'image', ...parseData } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        -320
+      ],
+      "id": "bc3a9648-bf54-4af6-b3a2-1738ed53edfd",
+      "name": "Extract Image Options"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract video URLs with metadata for AI selection\nconst videos = $json.videos || [];\nconst mediaOptions = videos.map((v, i) => {\n  const files = v.video_files || [];\n  const hd = files.find(f => f.quality === 'hd') || files[0];\n  return {\n    id: i,\n    url: hd?.link,\n    alt: v.url?.split('/').pop() || 'Video ' + i\n  };\n}).filter(m => m.url);\nconst parseData = $('Parse AI 1').first().json;\nreturn [{ json: { mediaOptions, mediaType: 'video', ...parseData } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        -16
+      ],
+      "id": "cf4d3587-e4be-4241-a4d4-c4cc2a1334b3",
+      "name": "Extract Video Options"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Select best media URLs for each variant.\n\nINPUT:\n- Variants: {{ $json.extractData.forAI.numVariants }}\n- Clips per variant: {{ $json.extractData.forAI.numClips }}\n- Clip descriptions: {{ JSON.stringify($json.aiOutput.variants[0]?.clipDescriptions || [$json.extractData.forAI.description]) }}\n- Available media:\n{{ $json.mediaOptions.slice(0, 15).map(m => `[${m.id}] ${m.alt}`).join('\\n') }}\n\nTASK:\nFor each variant, select the best media IDs that match the clip descriptions.\nUse DIFFERENT IDs for each variant when possible.\n\nOUTPUT (JSON only):\n{\n  \"selections\": [\n    {\"variantIndex\": 0, \"mediaIds\": [3, 7, 2]},\n    {\"variantIndex\": 1, \"mediaIds\": [5, 1, 8]}\n  ]\n}\n\nRULES:\n- mediaIds array must have exactly {{ $json.extractData.forAI.numClips }} items\n- Pick IDs that best match clip descriptions\n- Avoid duplicates across variants if possible\n- JSON only, no markdown",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2944,
+        -160
+      ],
+      "id": "83ef8713-bda1-42c6-9973-c4765cc56c42",
+      "name": "AI Agent 2: URL Selector",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2944,
+        144
+      ],
+      "id": "2544769a-ac68-46a9-a924-3e184a3ab5e0",
+      "name": "Gemini 2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0Y3IITMeiDyvu2zW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
     },
     {
       "parameters": {
@@ -332,11 +398,11 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        1472,
-        192
+        2784,
+        144
       ],
-      "id": "4f09be7d-bbea-439a-844a-8aa9ae574420",
-      "name": "Groq Chat Model",
+      "id": "5e0dfc25-e991-49a0-9250-10642771ffe1",
+      "name": "Groq 2",
       "credentials": {
         "groqApi": {
           "id": "4ZEZ83UlO38Ss7tT",
@@ -346,14 +412,26 @@
     },
     {
       "parameters": {
+        "jsCode": "// Parse AI selection and assemble final variants\nconst raw = $json.output;\nconst cleaned = raw.replace(/^```json\\s*/i, '').replace(/```$/i, '').trim();\nlet selectionOutput;\ntry { selectionOutput = JSON.parse(cleaned); } catch (e) { selectionOutput = { selections: [] }; }\n\n// Get data from Parse AI 1 (always executed, before the branch)\nconst parseData = $('Parse AI 1').first().json;\nconst { aiOutput, extractData } = parseData;\nconst { baseStructure, endpointType, usernames } = extractData;\nconst numClips = extractData.forAI.numClips;\n\n// Get mediaOptions - try both Extract nodes (only one will have run)\nlet mediaOptions = [];\ntry { mediaOptions = $('Extract Image Options').first()?.json?.mediaOptions || []; } catch(e) {}\nif (mediaOptions.length === 0) {\n  try { mediaOptions = $('Extract Video Options').first()?.json?.mediaOptions || []; } catch(e) {}\n}\n\n// Helper to get URL by ID with fallback\nfunction getUrlById(id) {\n  const item = mediaOptions.find(m => m.id === id);\n  return item?.url || mediaOptions[id % mediaOptions.length]?.url || mediaOptions[0]?.url;\n}\n\nconst variants = usernames.map((username, vIdx) => {\n  const variantData = aiOutput.variants?.[vIdx] || aiOutput.variants?.[0] || {};\n  const selection = selectionOutput.selections?.find(s => s.variantIndex === vIdx);\n  const mediaIds = selection?.mediaIds || Array.from({length: numClips}, (_, i) => (vIdx * numClips + i) % mediaOptions.length);\n  \n  const variant = {\n    endpoint: baseStructure.endpoint,\n    request_json: {\n      audioUrl: baseStructure.audioUrl,\n      original: baseStructure.original,\n      watermark: '@' + username.replace('@', '')\n    },\n    caption: variantData.mainCaption || baseStructure.caption,\n    description: variantData.description || baseStructure.description,\n    niche: baseStructure.niche,\n    transcription: baseStructure.transcription\n  };\n  \n  if (baseStructure.quote) variant.request_json.quote = baseStructure.quote;\n  if (baseStructure.author) variant.request_json.author = baseStructure.author;\n  if (baseStructure.duration) variant.request_json.duration = baseStructure.duration;\n  if (baseStructure.overlay !== undefined) variant.request_json.overlay = baseStructure.overlay;\n  \n  if (endpointType.isStyleEndpoint) {\n    variant.request_json.imageUrl = getUrlById(mediaIds[0]);\n    variant.request_json.imageDescription = variantData.clipDescriptions?.[0] || baseStructure.description;\n  } else if (endpointType.isVid1Single) {\n    variant.request_json.videoUrl = getUrlById(mediaIds[0]);\n    variant.request_json.videoDescription = variantData.clipDescriptions?.[0] || baseStructure.description;\n  } else if (endpointType.isMultiClip) {\n    variant.request_json.clips = baseStructure.clips.map((clipTiming, cIdx) => ({\n      ...clipTiming,\n      videoUrl: getUrlById(mediaIds[cIdx] ?? cIdx),\n      description: variantData.clipDescriptions?.[cIdx] || 'Video clip'\n    }));\n  }\n  \n  if (baseStructure.captions?.length > 0) {\n    variant.request_json.captions = baseStructure.captions.map((c, i) => ({\n      ...c,\n      alt: variantData.captionAlts?.[i]\n    }));\n  }\n  \n  if (aiOutput.timingAdjustments && variant.request_json.clips) {\n    aiOutput.timingAdjustments.forEach((adj, i) => {\n      if (variant.request_json.clips[i] && adj) {\n        if (adj.start !== undefined) variant.request_json.clips[i].start = adj.start;\n        if (adj.duration !== undefined) variant.request_json.clips[i].duration = adj.duration;\n      }\n    });\n  }\n  \n  return variant;\n});\n\nreturn variants.map(v => ({ json: v }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3296,
+        -160
+      ],
+      "id": "3efe3b87-74ad-44eb-ac5a-436224c2f4c9",
+      "name": "Assemble Variants"
+    },
+    {
+      "parameters": {
         "resource": "databasePage",
         "operation": "getAll",
         "databaseId": {
           "__rl": true,
           "value": "2c751a6d-097f-80d7-9366-e12aae2f619c",
           "mode": "list",
-          "cachedResultName": "Accounts",
-          "cachedResultUrl": "https://www.notion.so/2c751a6d097f80d79366e12aae2f619c"
+          "cachedResultName": "Accounts"
         },
         "filterType": "manual",
         "filters": {
@@ -370,11 +448,11 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        400,
+        288,
         -304
       ],
-      "id": "7d3bf52b-a1e5-4dc4-9dbf-c5557c9a93bb",
-      "name": "Get many database pages",
+      "id": "685288e2-3416-4905-8d01-30c934d47417",
+      "name": "Get Entrepreneur",
       "credentials": {
         "notionApi": {
           "id": "NsYBQ9PiZRbvlVC9",
@@ -384,16 +462,16 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst usernames = items.map(item => item.json.name);\nreturn [{ json: { usernames: usernames } }];"
+        "jsCode": "return [{ json: { usernames: $input.all().map(i => i.json.name) } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        672,
+        560,
         -304
       ],
-      "id": "8b82a554-2e81-4d5e-a2f5-a627062f5500",
-      "name": "Code in JavaScript1"
+      "id": "0cfe8844-482f-4bbb-8e97-a64cc678899a",
+      "name": "Users 1"
     },
     {
       "parameters": {
@@ -403,8 +481,7 @@
           "__rl": true,
           "value": "2c751a6d-097f-80d7-9366-e12aae2f619c",
           "mode": "list",
-          "cachedResultName": "Accounts",
-          "cachedResultUrl": "https://www.notion.so/2c751a6d097f80d79366e12aae2f619c"
+          "cachedResultName": "Accounts"
         },
         "filterType": "manual",
         "filters": {
@@ -421,11 +498,11 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        496,
+        384,
         -112
       ],
-      "id": "50dcaf59-20af-4a3f-bc1f-ca1c0963bd73",
-      "name": "Get many database pages1",
+      "id": "a9e1347b-8d45-4ffc-8192-5322d018c585",
+      "name": "Get Fitness",
       "credentials": {
         "notionApi": {
           "id": "NsYBQ9PiZRbvlVC9",
@@ -435,16 +512,16 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst usernames = items.map(item => item.json.name);\nreturn [{ json: { usernames: usernames } }];"
+        "jsCode": "return [{ json: { usernames: $input.all().map(i => i.json.name) } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        752,
+        640,
         -112
       ],
-      "id": "d1990721-3880-42fa-8139-77ceb3b519ac",
-      "name": "Code in JavaScript2"
+      "id": "22374e6c-b7b8-43de-8f3b-3f477075283d",
+      "name": "Users 2"
     },
     {
       "parameters": {
@@ -454,8 +531,7 @@
           "__rl": true,
           "value": "2c751a6d-097f-80d7-9366-e12aae2f619c",
           "mode": "list",
-          "cachedResultName": "Accounts",
-          "cachedResultUrl": "https://www.notion.so/2c751a6d097f80d79366e12aae2f619c"
+          "cachedResultName": "Accounts"
         },
         "filterType": "manual",
         "filters": {
@@ -472,11 +548,11 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        848,
+        736,
         160
       ],
-      "id": "ae0ce4f3-05e9-4682-9298-6d743377c00e",
-      "name": "Get many database pages2",
+      "id": "1d61eff0-83a5-487a-9b86-40ba57056615",
+      "name": "Get Motivation",
       "credentials": {
         "notionApi": {
           "id": "NsYBQ9PiZRbvlVC9",
@@ -486,16 +562,16 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst usernames = items.map(item => item.json.name);\nreturn [{ json: { usernames: usernames } }];"
+        "jsCode": "return [{ json: { usernames: $input.all().map(i => i.json.name) } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1104,
+        1008,
         160
       ],
-      "id": "728fa134-66f5-4ded-8cb5-c22551a5c44b",
-      "name": "Code in JavaScript3"
+      "id": "3f31e475-2d46-4e13-8e1b-aa6197c2a877",
+      "name": "Users 3"
     }
   ],
   "connections": {
@@ -514,7 +590,7 @@
       "main": [
         [
           {
-            "node": "Get many database pages",
+            "node": "Get Entrepreneur",
             "type": "main",
             "index": 0
           }
@@ -532,7 +608,7 @@
       "main": [
         [
           {
-            "node": "Get many database pages1",
+            "node": "Get Fitness",
             "type": "main",
             "index": 0
           }
@@ -550,30 +626,107 @@
       "main": [
         [
           {
-            "node": "Get many database pages2",
+            "node": "Get Motivation",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Extract Variant Data": {
+    "Get Entrepreneur": {
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "Users 1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "AI Agent": {
+    "Users 1": {
       "main": [
         [
           {
-            "node": "If",
+            "node": "Extract Base Data",
             "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Fitness": {
+      "main": [
+        [
+          {
+            "node": "Users 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Users 2": {
+      "main": [
+        [
+          {
+            "node": "Extract Base Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Motivation": {
+      "main": [
+        [
+          {
+            "node": "Users 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Users 3": {
+      "main": [
+        [
+          {
+            "node": "Extract Base Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Base Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent 1: Rewrites",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent 1: Rewrites": {
+      "main": [
+        [
+          {
+            "node": "Parse AI 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq 1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent 1: Rewrites",
+            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -583,135 +736,113 @@
       "ai_tool": [
         [
           {
-            "node": "AI Agent",
+            "node": "AI Agent 1: Rewrites",
             "type": "ai_tool",
             "index": 0
           }
         ]
       ]
     },
-    "Pexels Images": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Pexels Videos": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If": {
+    "Parse AI 1": {
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "Image or Video?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image or Video?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Pexels Images",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Reconstruct Variants",
+            "node": "Fetch Pexels Videos",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Groq Chat Model": {
+    "Fetch Pexels Images": {
+      "main": [
+        [
+          {
+            "node": "Extract Image Options",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Pexels Videos": {
+      "main": [
+        [
+          {
+            "node": "Extract Video Options",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Image Options": {
+      "main": [
+        [
+          {
+            "node": "AI Agent 2: URL Selector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Video Options": {
+      "main": [
+        [
+          {
+            "node": "AI Agent 2: URL Selector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent 2: URL Selector": {
+      "main": [
+        [
+          {
+            "node": "Assemble Variants",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq 2": {
       "ai_languageModel": [
         [
           {
-            "node": "AI Agent",
+            "node": "AI Agent 2: URL Selector",
             "type": "ai_languageModel",
             "index": 0
           }
         ]
       ]
     },
-    "Get many database pages": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript1": {
-      "main": [
-        [
-          {
-            "node": "Extract Variant Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get many database pages1": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript2": {
-      "main": [
-        [
-          {
-            "node": "Extract Variant Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get many database pages2": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript3": {
-      "main": [
-        [
-          {
-            "node": "Extract Variant Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Google Gemini Chat Model": {
+    "Gemini 1": {
       "ai_languageModel": [
         [
           {
-            "node": "AI Agent",
+            "node": "AI Agent 1: Rewrites",
             "type": "ai_languageModel",
             "index": 1
           }
@@ -804,7 +935,7 @@
       }
     ]
   },
-  "versionId": "c4f3d84d-608c-4e77-b5a5-98562b63f4cc",
+  "versionId": "19e9a1e0-060a-4d8d-9e99-3af9ecd2591d",
   "activeVersionId": "2716ee42-d356-4bc4-b535-1807c6f416a7",
   "triggerCount": 0,
   "shared": [
