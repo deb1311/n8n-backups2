@@ -1,0 +1,73 @@
+{
+  "updatedAt": "2025-09-15T07:52:41.000Z",
+  "createdAt": "2025-09-13T13:32:22.467Z",
+  "id": "MgGBGyr3yTZNaWsF",
+  "name": "Weather Fetch Workflow",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "id": "Start",
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        150,
+        100
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "httpWeather",
+      "name": "Fetch London Weather",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        400,
+        100
+      ],
+      "parameters": {
+        "url": "https://wttr.in/London?format=j1",
+        "requestMethod": "GET",
+        "responseFormat": "json"
+      }
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Fetch London Weather",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "db133e2b-e4ea-422b-8fa4-c2be717bf4ad",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-09-13T13:32:22.489Z",
+      "createdAt": "2025-09-13T13:32:22.489Z",
+      "role": "workflow:owner",
+      "workflowId": "MgGBGyr3yTZNaWsF",
+      "projectId": "bnvMSIIUgNfVjAJN"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
