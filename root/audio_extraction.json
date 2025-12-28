@@ -1,0 +1,413 @@
+{
+  "updatedAt": "2025-11-08T09:03:37.000Z",
+  "createdAt": "2025-11-08T09:00:18.615Z",
+  "id": "yYUHNorM5skZ00YO",
+  "name": "audio extraction",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "command": "=ffmpeg -y -i /home/node/{{ $execution.id }}_video.mp4 -vn -acodec libmp3lame -q:a 2 /home/node/{{ $execution.id }}_audio.mp3"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        208
+      ],
+      "id": "9de9b13d-22c0-49fb-9fa9-12f6dcf4502e",
+      "name": "Execute Command1"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/home/node/{{ $execution.id }}_video.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -1024,
+        208
+      ],
+      "id": "a118e5e9-a299-4877-aa64-e6244cc64e37",
+      "name": "Read/Write Files from Disk",
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/home/node/{{ $execution.id }}_audio.mp3",
+        "options": {
+          "fileExtension": "mp3",
+          "dataPropertyName": "audio"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        208
+      ],
+      "id": "986fa0f6-360a-4831-8d1c-c40081842b8a",
+      "name": "Read/Write Files from Disk1"
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "assets",
+        "fileName": "={{ $json.fileName }}",
+        "binaryPropertyName": "audio",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        208
+      ],
+      "id": "033a87aa-984e-4467-896e-5211014f42cb",
+      "name": "Upload a file",
+      "credentials": {
+        "s3": {
+          "id": "qPRJo0yK63YYqCLJ",
+          "name": "S3 account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2fe6caad-b4d1-4387-a522-00495a46826c",
+              "name": "audioURL",
+              "value": "=https://vllxucytucjyflsenjmz.supabase.co/storage/v1/object/public/assets/{{ $execution.id }}_audio.mp3",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        208
+      ],
+      "id": "1b145187-1354-466a-871b-2cdb383ccc4d",
+      "name": "Audio URL"
+    },
+    {
+      "parameters": {
+        "command": "=rm /home/node/{{ $execution.id }}_video.mp4 /home/node/{{ $execution.id }}_audio.mp3"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        208
+      ],
+      "id": "54f97893-66aa-4426-b27e-8128686ce5be",
+      "name": "Cleanup"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1280,
+        208
+      ],
+      "id": "c0c75929-7644-407a-83bf-89428d1fe968",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "connections": {
+    "Execute Command1": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Execute Command1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk1": {
+      "main": [
+        [
+          {
+            "node": "Upload a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a file": {
+      "main": [
+        [
+          {
+            "node": "Cleanup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cleanup": {
+      "main": [
+        [
+          {
+            "node": "Audio URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "3fc76042-a621-42c2-8ea8-33814be328d5",
+  "activeVersionId": "3fc76042-a621-42c2-8ea8-33814be328d5",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-11-08T09:00:18.647Z",
+      "createdAt": "2025-11-08T09:00:18.647Z",
+      "role": "workflow:owner",
+      "workflowId": "yYUHNorM5skZ00YO",
+      "projectId": "bnvMSIIUgNfVjAJN"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-28T15:26:32.272Z",
+    "createdAt": "2025-12-28T15:26:32.272Z",
+    "versionId": "3fc76042-a621-42c2-8ea8-33814be328d5",
+    "workflowId": "yYUHNorM5skZ00YO",
+    "nodes": [
+      {
+        "parameters": {
+          "command": "=ffmpeg -y -i /home/node/{{ $execution.id }}_video.mp4 -vn -acodec libmp3lame -q:a 2 /home/node/{{ $execution.id }}_audio.mp3"
+        },
+        "type": "n8n-nodes-base.executeCommand",
+        "typeVersion": 1,
+        "position": [
+          -720,
+          208
+        ],
+        "id": "9de9b13d-22c0-49fb-9fa9-12f6dcf4502e",
+        "name": "Execute Command1"
+      },
+      {
+        "parameters": {
+          "operation": "write",
+          "fileName": "=/home/node/{{ $execution.id }}_video.mp4",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.readWriteFile",
+        "typeVersion": 1,
+        "position": [
+          -1024,
+          208
+        ],
+        "id": "a118e5e9-a299-4877-aa64-e6244cc64e37",
+        "name": "Read/Write Files from Disk",
+        "notesInFlow": false
+      },
+      {
+        "parameters": {
+          "fileSelector": "=/home/node/{{ $execution.id }}_audio.mp3",
+          "options": {
+            "fileExtension": "mp3",
+            "dataPropertyName": "audio"
+          }
+        },
+        "type": "n8n-nodes-base.readWriteFile",
+        "typeVersion": 1,
+        "position": [
+          -496,
+          208
+        ],
+        "id": "986fa0f6-360a-4831-8d1c-c40081842b8a",
+        "name": "Read/Write Files from Disk1"
+      },
+      {
+        "parameters": {
+          "operation": "upload",
+          "bucketName": "assets",
+          "fileName": "={{ $json.fileName }}",
+          "binaryPropertyName": "audio",
+          "additionalFields": {}
+        },
+        "type": "n8n-nodes-base.s3",
+        "typeVersion": 1,
+        "position": [
+          -240,
+          208
+        ],
+        "id": "033a87aa-984e-4467-896e-5211014f42cb",
+        "name": "Upload a file",
+        "credentials": {
+          "s3": {
+            "id": "qPRJo0yK63YYqCLJ",
+            "name": "S3 account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "2fe6caad-b4d1-4387-a522-00495a46826c",
+                "name": "audioURL",
+                "value": "=https://vllxucytucjyflsenjmz.supabase.co/storage/v1/object/public/assets/{{ $execution.id }}_audio.mp3",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          192,
+          208
+        ],
+        "id": "1b145187-1354-466a-871b-2cdb383ccc4d",
+        "name": "Audio URL"
+      },
+      {
+        "parameters": {
+          "command": "=rm /home/node/{{ $execution.id }}_video.mp4 /home/node/{{ $execution.id }}_audio.mp3"
+        },
+        "type": "n8n-nodes-base.executeCommand",
+        "typeVersion": 1,
+        "position": [
+          -32,
+          208
+        ],
+        "id": "54f97893-66aa-4426-b27e-8128686ce5be",
+        "name": "Cleanup"
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -1280,
+          208
+        ],
+        "id": "c0c75929-7644-407a-83bf-89428d1fe968",
+        "name": "When Executed by Another Workflow"
+      }
+    ],
+    "connections": {
+      "Execute Command1": {
+        "main": [
+          [
+            {
+              "node": "Read/Write Files from Disk1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read/Write Files from Disk": {
+        "main": [
+          [
+            {
+              "node": "Execute Command1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read/Write Files from Disk1": {
+        "main": [
+          [
+            {
+              "node": "Upload a file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload a file": {
+        "main": [
+          [
+            {
+              "node": "Cleanup",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Cleanup": {
+        "main": [
+          [
+            {
+              "node": "Audio URL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Read/Write Files from Disk",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null,
+    "autosaved": false
+  },
+  "tags": []
+}

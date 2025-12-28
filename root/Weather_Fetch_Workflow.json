@@ -1,35 +1,40 @@
 {
-  "updatedAt": "2025-09-15T07:52:41.000Z",
-  "createdAt": "2025-09-13T13:32:22.467Z",
-  "id": "MgGBGyr3yTZNaWsF",
+  "updatedAt": "2025-09-13T13:31:14.000Z",
+  "createdAt": "2025-09-13T13:27:20.837Z",
+  "id": "qHWzGzQ4pBuZzlXO",
   "name": "Weather Fetch Workflow",
   "active": false,
   "isArchived": true,
   "nodes": [
     {
-      "id": "Start",
+      "id": "a2d53a99-9b8e-4a14-9b9a-3f9c3f68c07f",
       "name": "Start",
-      "type": "n8n-nodes-base.start",
+      "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        150,
-        100
+        250,
+        300
       ],
       "parameters": {}
     },
     {
-      "id": "httpWeather",
-      "name": "Fetch London Weather",
+      "id": "b3c64b1d-9c9f-4e1d-a0e1-4b7b3b7b4a2e",
+      "name": "HTTP",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 2,
+      "typeVersion": 4.1,
       "position": [
-        400,
-        100
+        450,
+        300
       ],
       "parameters": {
-        "url": "https://wttr.in/London?format=j1",
-        "requestMethod": "GET",
-        "responseFormat": "json"
+        "authentication": "none",
+        "options": {
+          "response": {
+            "type": "json"
+          }
+        },
+        "method": "GET",
+        "url": "https://wttr.in/London?format=j1"
       }
     }
   ],
@@ -38,9 +43,9 @@
       "main": [
         [
           {
+            "type": "main",
             "index": 0,
-            "node": "Fetch London Weather",
-            "type": "main"
+            "node": "HTTP"
           }
         ]
       ]
@@ -56,15 +61,15 @@
   "staticData": null,
   "meta": null,
   "pinData": null,
-  "versionId": "db133e2b-e4ea-422b-8fa4-c2be717bf4ad",
+  "versionId": "cd7ccb65-288b-4b71-9394-800d81cc9c12",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2025-09-13T13:32:22.489Z",
-      "createdAt": "2025-09-13T13:32:22.489Z",
+      "updatedAt": "2025-09-13T13:27:20.841Z",
+      "createdAt": "2025-09-13T13:27:20.841Z",
       "role": "workflow:owner",
-      "workflowId": "MgGBGyr3yTZNaWsF",
+      "workflowId": "qHWzGzQ4pBuZzlXO",
       "projectId": "bnvMSIIUgNfVjAJN"
     }
   ],
