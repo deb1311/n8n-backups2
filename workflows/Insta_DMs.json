@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-12-28T21:02:32.548Z",
+  "updatedAt": "2025-12-28T21:14:30.964Z",
   "createdAt": "2025-11-07T18:51:21.243Z",
   "id": "KfJT1b9qUCm9Nln0",
   "name": "Insta DMs",
@@ -77,20 +77,6 @@
           "name": "Notion account"
         }
       }
-    },
-    {
-      "parameters": {
-        "url": "={{ $json.body.entry[0].messaging[0].message.attachments[0].payload.url }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        368,
-        128
-      ],
-      "id": "193c235f-9ef0-4aca-913d-21df9043efc5",
-      "name": "HTTP Request"
     },
     {
       "parameters": {
@@ -261,6 +247,20 @@
       ],
       "id": "3294c3e1-99b2-430a-b6e3-ac3e2ea7afea",
       "name": "Call 'Audio & 360p Extraction (Cloud Run API)'"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.body.entry[0].messaging[0].message.attachments[0].payload.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        -32
+      ],
+      "id": "1edd19e3-b86f-40da-92e2-4f92feab8a3e",
+      "name": "HTTP Request1"
     }
   ],
   "connections": {
@@ -273,17 +273,6 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "HTTP Request": {
-      "main": [
         [
           {
             "node": "Call 'Audio & 360p Extraction (Cloud Run API)'",
@@ -370,9 +359,72 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {},
-  "versionId": "996679ef-fc52-42c1-b726-d306a24e4488",
-  "activeVersionId": "996679ef-fc52-42c1-b726-d306a24e4488",
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "connection": "upgrade",
+            "host": "n8n.ncertbot.fun",
+            "x-real-ip": "173.252.79.4",
+            "x-forwarded-for": "173.252.79.4",
+            "x-forwarded-proto": "https",
+            "content-length": "937",
+            "accept": "*/*",
+            "accept-encoding": "deflate, gzip",
+            "user-agent": "facebookexternalua",
+            "content-type": "application/json",
+            "x-hub-signature": "sha1=8815e1b6d82b213c67abc2ac5da79cc1020b3304",
+            "x-hub-signature-256": "sha256=fbef5ac5be8ef1a599f7fe03512047e2078d486ccc7327ae1a71d10ec1b210e5",
+            "instagram-api-version": "v24.0"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "object": "instagram",
+            "entry": [
+              {
+                "time": 1766956048226,
+                "id": "17841477319471038",
+                "messaging": [
+                  {
+                    "sender": {
+                      "id": "1126095236362409"
+                    },
+                    "recipient": {
+                      "id": "17841477319471038"
+                    },
+                    "timestamp": 1766955765631,
+                    "message": {
+                      "mid": "aWdfZAG1faXRlbToxOklHTWVzc2FnZAUlEOjE3ODQxNDc3MzE5NDcxMDM4OjM0MDI4MjM2Njg0MTcxMDMwMTI0NDI1OTg1MjMzMDgwNDA5Mjg2NTozMjU5NDU4MDc5ODE3MjAyODEwMjAzNjc2Njk0MTI0OTUzNgZDZD",
+                      "attachments": [
+                        {
+                          "type": "ig_reel",
+                          "payload": {
+                            "reel_video_id": "18046765355442417",
+                            "title": "Everything is working in your favor!🤍\n\n#shiftinconciousness #higherself #quantumjump #selfevolution #manifestation #777 #444 #111",
+                            "url": "https://lookaside.fbsbx.com/ig_messaging_cdn/?asset_id=18046765355442417&signature=AYd262zYK15uCi_6n0NLXmv81Y8Y4uYXp5a2Ap-ORpQXns2aYbobf6y5oU4RW9gOuYq8-ezbyvz-eDdFF2AEX0c_iDEgV50nOtIEGXhEsFU9iG08GTulHjL67Hm7RPQmoH_VQWTuIc9imGb0kej-udyyiuDAnShvjZSnysfumAWdddpKcfvochTArAdhapZiC575T1a-lx2WeEkp4i16dk9-xYEMdz37"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "webhookUrl": "https://n8n.ncertbot.fun/webhook-test/32c0d16d-c135-47ea-9f3b-72610f142822",
+          "executionMode": "test"
+        },
+        "pairedItem": {
+          "item": 0,
+          "input": 1
+        }
+      }
+    ]
+  },
+  "versionId": "4daa6bde-8473-461d-b667-368e5dd049c1",
+  "activeVersionId": "4daa6bde-8473-461d-b667-368e5dd049c1",
   "triggerCount": 1,
   "shared": [
     {
@@ -384,9 +436,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2025-12-28T21:07:34.000Z",
-    "createdAt": "2025-12-28T21:02:32.551Z",
-    "versionId": "996679ef-fc52-42c1-b726-d306a24e4488",
+    "updatedAt": "2025-12-28T21:14:37.000Z",
+    "createdAt": "2025-12-28T21:14:30.965Z",
+    "versionId": "4daa6bde-8473-461d-b667-368e5dd049c1",
     "workflowId": "KfJT1b9qUCm9Nln0",
     "nodes": [
       {
@@ -460,20 +512,6 @@
             "name": "Notion account"
           }
         }
-      },
-      {
-        "parameters": {
-          "url": "={{ $json.body.entry[0].messaging[0].message.attachments[0].payload.url }}",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          368,
-          128
-        ],
-        "id": "193c235f-9ef0-4aca-913d-21df9043efc5",
-        "name": "HTTP Request"
       },
       {
         "parameters": {
@@ -644,6 +682,20 @@
         ],
         "id": "3294c3e1-99b2-430a-b6e3-ac3e2ea7afea",
         "name": "Call 'Audio & 360p Extraction (Cloud Run API)'"
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.body.entry[0].messaging[0].message.attachments[0].payload.url }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          496,
+          -32
+        ],
+        "id": "1edd19e3-b86f-40da-92e2-4f92feab8a3e",
+        "name": "HTTP Request1"
       }
     ],
     "connections": {
@@ -656,17 +708,6 @@
               "index": 0
             }
           ],
-          [
-            {
-              "node": "HTTP Request",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "HTTP Request": {
-        "main": [
           [
             {
               "node": "Call 'Audio & 360p Extraction (Cloud Run API)'",
@@ -745,7 +786,7 @@
       }
     },
     "authors": "Debabrata Maitra",
-    "name": "v1",
+    "name": "v2",
     "description": "",
     "autosaved": false
   },
