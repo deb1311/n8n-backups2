@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-12-28T21:06:00.755Z",
+  "updatedAt": "2025-12-30T08:58:36.322Z",
   "createdAt": "2025-12-28T20:29:25.889Z",
   "id": "DzChCSlZ5mu2SvvH",
   "name": "Audio & 360p Extraction (Cloud Run API)",
@@ -406,19 +406,7 @@
     "When Executed by Another Workflow": [
       {
         "json": {
-          "url": "https://lookaside.fbsbx.com/ig_messaging_cdn/?asset_id=18046765355442417&signature=AYdifAAt-1dRHKnWJDmC7dWHR7pPrQSM1fGYbeqO6ZOZgvfIoGKIxWQLYlvocPwZ2Wc2uNb7fuxoPOpjtpRiN1h3k0gNQ12u1BBi4T8PYJQeZ9wYp-Zxo_BtqzHe1j-5hmpxCog45t3IiYIJJFkAcS9nPSsG_Hr-y5ZfTmIZSbzfOFax9Q-ZwfRptkm7W3MydRwi9a7NLNyg_AqOPgZM0gbgimjveI0w"
-        },
-        "binary": {
-          "data": {
-            "mimeType": "video/mp4",
-            "fileType": "video",
-            "fileExtension": "mp4",
-            "data": "filesystem-v2",
-            "directory": "https://lookaside.fbsbx.com/ig_messaging_cdn/?asset_id=18046765355442417&signature=AYdifAAt-1dRHKnWJDmC7dWHR7pPrQSM1fGYbeqO6ZOZgvfIoGKIxWQLYlvocPwZ2Wc2uNb7fuxoPOpjtpRiN1h3k0gNQ12u1BBi4T8PYJQeZ9wYp-Zxo_BtqzHe1j-5hmpxCog45t3IiYIJJFkAcS9nPSsG_Hr-y5ZfTmIZSbzfOFax9Q-ZwfRptkm7W3MydRwi9a7NLNyg_AqOPgZM0gbgimjveI0w",
-            "fileName": "AQPbXdbkQT_Fw5dEuNmMFpYR3MUlzLI_pLOZQgaAogWmm9OhhGmTW5ywEfM6QoB9pYn4B58ebzONOsemuzfTVrXpazyGMe0ZTzZeJHg.mp4",
-            "id": "filesystem-v2:workflows/KfJT1b9qUCm9Nln0/executions/447/binary_data/07671669-1644-4be9-9940-c3139c73d6d6",
-            "fileSize": "6.32 MB"
-          }
+          "url": "https://lookaside.fbsbx.com/ig_messaging_cdn/?asset_id=18147658690435503&signature=AYewzeaWf_6U7C31VWnzjirhw0ngcodGoe7buAiur1niimPBHcjlPqAcBB9DbT5cLy_pLQLFdvSt2qiCM9MW9crZ296unmGpMhVbjuPmDCdrGOuCok9IcpU67GJOkfdH-i52yqIx2dp6IBOR4irTmAy2AFEaSP1OF14sGu8rqhVHTeYU35RpXCTAjrYFvKeZMe7wfiB70998TZYnvydlmTKZmtMxH14C"
         },
         "pairedItem": {
           "item": 0

@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2025-12-30T08:48:42.976Z",
-  "createdAt": "2025-11-12T08:52:24.089Z",
-  "id": "bZxFUrOPmVEbMTkA",
-  "name": "Variants",
+  "updatedAt": "2025-12-30T09:03:30.405Z",
+  "createdAt": "2025-12-30T08:47:22.636Z",
+  "id": "7eNS1MnWLn9hEZ0G",
+  "name": "Variants copy",
   "active": true,
   "isArchived": false,
   "nodes": [
@@ -16,7 +16,7 @@
         -448,
         -192
       ],
-      "id": "048baa5c-163d-4096-a8ec-e9bc6f121d2f",
+      "id": "0b6a644f-8137-4a51-bcc3-3e8253cc1fba",
       "name": "When Executed by Another Workflow"
     },
     {
@@ -46,10 +46,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -64,
+        -144,
         -192
       ],
-      "id": "0b819af1-1cb1-49d7-af0d-1e3e96f3bf70",
+      "id": "47dbe0f9-ccb7-421b-8814-e3742cec7bd5",
       "name": "Entrepreneur"
     },
     {
@@ -79,10 +79,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        112,
+        32,
         16
       ],
-      "id": "559e2e58-901f-4f84-9e0d-6478b4009b7d",
+      "id": "161c947e-a66a-4c24-85ca-89f3bff2fcce",
       "name": "Fitness"
     },
     {
@@ -112,10 +112,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        384,
+        304,
         176
       ],
-      "id": "766f14a7-73d5-4d10-a7f3-8dcf7620ef2e",
+      "id": "96a0d71d-1f88-4178-a4fa-6304c914cc0c",
       "name": "General Motivation"
     },
     {
@@ -125,26 +125,26 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1200,
+        1120,
         -160
       ],
-      "id": "dfb4d75d-7d9a-43f6-a07e-4632cb40c621",
+      "id": "40cd052a-9ccf-464c-b56a-5a1b1f8fdbaa",
       "name": "Extract Base Data"
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Generate search terms and text rewrites.\n\nINPUT:\n- Description: {{ $json.forAI.description }}\n- Variants: {{ $json.forAI.numVariants }}\n- Clips: {{ $json.forAI.numClips }}\n- Media: {{ $json.forAI.mediaType }}\n- Transcription: {{ $json.forAI.transcriptionRequired }}\n- AudioUrl: {{ $json.forAI.audioUrl }}\n- Original Captions: {{ JSON.stringify($json.forAI.originalCaptions) }}\n- MainCaption: {{ $json.forAI.originalMainCaption }}\n- ClipDescs: {{ JSON.stringify($json.forAI.originalClipDescriptions) }}\n\nTASKS:\n1. Generate 2-3 Pexels search terms from description\n2. IF transcription=true AND audioUrl exists:\n   - CALL the Transcription tool with the audioUrl to get word-level timestamps\n   - Use the transcript data to correct caption text and timing\n   - Match caption boundaries to actual spoken words for perfect sync\n3. Generate rewrites for EACH variant\n\nOUTPUT (JSON only):\n{\n  \"searchTerms\": [\"term1\", \"term2\"],\n  \"transcriptData\": null OR {transcript object from tool},\n  \"timingAdjustments\": null OR {\n    \"captions\": [{\"text\": \"corrected text\", \"start\": 0.1, \"duration\": 1.8}]\n  },\n  \"variants\": [\n    {\n      \"captionAlts\": [\"rewrite1\"],\n      \"description\": \"rewritten desc\",\n      \"mainCaption\": \"rewritten caption #hashtags\",\n      \"clipDescriptions\": [\"clip1\", \"clip2\"]\n    }\n  ]\n}\n\nRULES:\n- searchTerms: key themes (travel, success, fitness)\n- Each variant: DIFFERENT wording, SAME meaning\n- clipDescriptions: exactly {{ $json.forAI.numClips }} items\n- If transcription=true, timingAdjustments.captions array must have corrected text and timing based on actual transcript\n- JSON only, no markdown",
+        "text": "=Generate search terms and text rewrites.\n\nINPUT:\n- Description: {{ $json.forAI.description }}\n- Variants: {{ $json.forAI.numVariants }}\n- Clips: {{ $json.forAI.numClips }}\n- Media: {{ $json.forAI.mediaType }}\n- Transcription: {{ $json.forAI.transcriptionRequired }}\n- AudioUrl: {{ $json.forAI.audioUrl }}\n- Captions: {{ JSON.stringify($json.forAI.originalCaptions) }}\n- MainCaption: {{ $json.forAI.originalMainCaption }}\n- ClipDescs: {{ JSON.stringify($json.forAI.originalClipDescriptions) }}\n\nTASKS:\n1. Generate 2-3 Pexels search terms from description\n2. IF transcription=true AND audioUrl exists:\n   - CALL the Transcription tool with the audioUrl to get word-level timestamps\n   - Use the transcript data to correct caption text and timing\n   - Match caption boundaries to actual spoken words for perfect sync\n3. Generate rewrites for EACH variant\n\nOUTPUT (JSON only):\n{\n  \"searchTerms\": [\"term1\", \"term2\"],\n  \"timingAdjustments\": null,\n  \"variants\": [\n    {\n      \"captionAlts\": [\"rewrite1\"],\n      \"description\": \"rewritten desc\",\n      \"mainCaption\": \"rewritten caption #hashtags\",\n      \"clipDescriptions\": [\"clip1\", \"clip2\"]\n    }\n  ]\n}\n\nRULES:\n- searchTerms: key themes (travel, success, fitness)\n- Each variant: DIFFERENT wording, SAME meaning\n- clipDescriptions: exactly {{ $json.forAI.numClips }} items\n- JSON only, no markdown",
         "needsFallback": true,
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        1552,
+        1472,
         -160
       ],
-      "id": "2df1d05f-d127-4d7d-bf2d-9428c9354417",
+      "id": "d764815c-e75c-4e46-ae2c-7106aa51fe7f",
       "name": "AI Agent 1: Rewrites",
       "retryOnFail": true
     },
@@ -155,10 +155,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        1536,
+        1456,
         192
       ],
-      "id": "da412f26-0db7-49cb-b038-e307bc919a3b",
+      "id": "116b9189-6e6d-452c-8590-f263215e870a",
       "name": "Gemini 1",
       "credentials": {
         "googlePalmApi": {
@@ -175,10 +175,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        1360,
+        1280,
         192
       ],
-      "id": "21134dda-2dd4-4fb7-beb3-628565dbe1ac",
+      "id": "81ec2853-9b0d-45d7-ac87-1ec122a07318",
       "name": "Groq 1",
       "credentials": {
         "groqApi": {
@@ -205,10 +205,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
       "position": [
-        1680,
+        1600,
         192
       ],
-      "id": "0c5ab199-46fa-43eb-86f3-d0555c7bf580",
+      "id": "45058d9d-b582-4670-8984-c41f1916fc94",
       "name": "Transcription"
     },
     {
@@ -218,10 +218,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1920,
+        1840,
         -160
       ],
-      "id": "bfa49123-9557-479f-abdb-8244bdbb72ef",
+      "id": "d4377953-7972-486c-aa1b-0bae46a98d4b",
       "name": "Parse AI 1"
     },
     {
@@ -251,10 +251,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2128,
+        2048,
         -160
       ],
-      "id": "7a446c65-baf2-483a-880c-944942e55d52",
+      "id": "22ac8177-9b28-4dd1-928a-a43239071bbf",
       "name": "Image or Video?"
     },
     {
@@ -287,10 +287,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2368,
+        2288,
         -320
       ],
-      "id": "4d137ab0-4654-48e6-8763-d53a4ec05bac",
+      "id": "69ba757e-89f8-42d4-a7d1-8438e486ed24",
       "name": "Fetch Pexels Images"
     },
     {
@@ -323,10 +323,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2368,
+        2288,
         -16
       ],
-      "id": "67b9d112-03ab-4733-a453-4cce4f782c0c",
+      "id": "e55fcff7-a0df-405e-b158-bacf5972a626",
       "name": "Fetch Pexels Videos"
     },
     {
@@ -336,10 +336,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2624,
+        2544,
         -320
       ],
-      "id": "3b75ebaa-62ce-43c3-9955-c0dd18762f91",
+      "id": "bc16b343-f6b6-454c-91e6-61a3f0678e84",
       "name": "Extract Image Options"
     },
     {
@@ -349,10 +349,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2624,
+        2544,
         -16
       ],
-      "id": "da285c05-54b6-44a8-b1be-a06708f04fa5",
+      "id": "1694f06f-192b-4c54-bb8a-fecc302eaa07",
       "name": "Extract Video Options"
     },
     {
@@ -365,10 +365,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        2928,
+        2848,
         -160
       ],
-      "id": "d247e064-f544-461b-9bf6-958645d49a9c",
+      "id": "4e07c911-149f-45bd-8861-d9723c98f677",
       "name": "AI Agent 2: URL Selector",
       "retryOnFail": true
     },
@@ -379,10 +379,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        2928,
+        2848,
         144
       ],
-      "id": "72ac0482-ef9a-4383-bee8-f89ffe7616c9",
+      "id": "ef1ef049-a735-494b-9b2c-3388cb491f8f",
       "name": "Gemini 2",
       "credentials": {
         "googlePalmApi": {
@@ -399,10 +399,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        2768,
+        2688,
         144
       ],
-      "id": "fcd43354-dba1-4c5b-b58b-dcce724e76cb",
+      "id": "ee216423-4034-4718-9313-6d650e00b9c4",
       "name": "Groq 2",
       "credentials": {
         "groqApi": {
@@ -413,15 +413,15 @@
     },
     {
       "parameters": {
-        "jsCode": "// Parse AI selection and assemble final variants\nconst raw = $json.output;\nconst cleaned = raw.replace(/^```json\\s*/i, '').replace(/```$/i, '').trim();\nlet selectionOutput;\ntry { selectionOutput = JSON.parse(cleaned); } catch (e) { selectionOutput = { selections: [] }; }\n\n// Get data from Parse AI 1 (always executed, before the branch)\nconst parseData = $('Parse AI 1').first().json;\nconst { aiOutput, extractData } = parseData;\nconst { baseStructure, endpointType, usernames } = extractData;\nconst numClips = extractData.forAI.numClips;\n\n// Get mediaOptions - try both Extract nodes (only one will have run)\nlet mediaOptions = [];\ntry { mediaOptions = $('Extract Image Options').first()?.json?.mediaOptions || []; } catch(e) {}\nif (mediaOptions.length === 0) {\n  try { mediaOptions = $('Extract Video Options').first()?.json?.mediaOptions || []; } catch(e) {}\n}\n\n// Helper to get URL by ID with fallback\nfunction getUrlById(id) {\n  const item = mediaOptions.find(m => m.id === id);\n  return item?.url || mediaOptions[id % mediaOptions.length]?.url || mediaOptions[0]?.url;\n}\n\nconst variants = usernames.map((username, vIdx) => {\n  const variantData = aiOutput.variants?.[vIdx] || aiOutput.variants?.[0] || {};\n  const selection = selectionOutput.selections?.find(s => s.variantIndex === vIdx);\n  const mediaIds = selection?.mediaIds || Array.from({length: numClips}, (_, i) => (vIdx * numClips + i) % mediaOptions.length);\n  \n  const variant = {\n    endpoint: baseStructure.endpoint,\n    request_json: {\n      audioUrl: baseStructure.audioUrl,\n      original: baseStructure.original,\n      watermark: '@' + username.replace('@', '')\n    },\n    caption: variantData.mainCaption || baseStructure.caption,\n    description: variantData.description || baseStructure.description,\n    niche: baseStructure.niche,\n    transcription: baseStructure.transcription\n  };\n  \n  if (baseStructure.quote) variant.request_json.quote = baseStructure.quote;\n  if (baseStructure.author) variant.request_json.author = baseStructure.author;\n  if (baseStructure.duration) variant.request_json.duration = baseStructure.duration;\n  if (baseStructure.overlay !== undefined) variant.request_json.overlay = baseStructure.overlay;\n  \n  if (endpointType.isStyleEndpoint) {\n    variant.request_json.imageUrl = getUrlById(mediaIds[0]);\n    variant.request_json.imageDescription = variantData.clipDescriptions?.[0] || baseStructure.description;\n  } else if (endpointType.isVid1Single) {\n    variant.request_json.videoUrl = getUrlById(mediaIds[0]);\n    variant.request_json.videoDescription = variantData.clipDescriptions?.[0] || baseStructure.description;\n  } else if (endpointType.isMultiClip) {\n    variant.request_json.clips = baseStructure.clips.map((clipTiming, cIdx) => ({\n      ...clipTiming,\n      videoUrl: getUrlById(mediaIds[cIdx] ?? cIdx),\n      description: variantData.clipDescriptions?.[cIdx] || 'Video clip'\n    }));\n  }\n  \n  // Apply caption timing and text corrections from transcription (if available)\n  if (aiOutput.timingAdjustments?.captions && baseStructure.captions?.length > 0) {\n    // Use corrected captions from AI (based on transcript)\n    variant.request_json.captions = aiOutput.timingAdjustments.captions.map((correctedCaption, i) => ({\n      text: correctedCaption.text,\n      start: correctedCaption.start,\n      duration: correctedCaption.duration,\n      alt: variantData.captionAlts?.[i] || baseStructure.captions[i]?.text\n    }));\n  } else if (baseStructure.captions?.length > 0) {\n    // No transcription corrections, use original captions with alt text\n    variant.request_json.captions = baseStructure.captions.map((c, i) => ({\n      text: c.text,\n      start: c.start,\n      duration: c.duration,\n      alt: variantData.captionAlts?.[i]\n    }));\n  }\n  \n  // Add transcript data for reference if available\n  if (aiOutput.transcriptData) {\n    variant.transcriptData = aiOutput.transcriptData;\n  }\n  \n  return variant;\n});\n\nreturn variants.map(v => ({ json: v }));"
+        "jsCode": "// Parse AI selection and assemble final variants\nconst raw = $json.output;\nconst cleaned = raw.replace(/^```json\\s*/i, '').replace(/```$/i, '').trim();\nlet selectionOutput;\ntry { selectionOutput = JSON.parse(cleaned); } catch (e) { selectionOutput = { selections: [] }; }\n\n// Get data from Parse AI 1 (always executed, before the branch)\nconst parseData = $('Parse AI 1').first().json;\nconst { aiOutput, extractData } = parseData;\nconst { baseStructure, endpointType, usernames } = extractData;\nconst numClips = extractData.forAI.numClips;\n\n// Get mediaOptions - try both Extract nodes (only one will have run)\nlet mediaOptions = [];\ntry { mediaOptions = $('Extract Image Options').first()?.json?.mediaOptions || []; } catch(e) {}\nif (mediaOptions.length === 0) {\n  try { mediaOptions = $('Extract Video Options').first()?.json?.mediaOptions || []; } catch(e) {}\n}\n\n// Helper to get URL by ID with fallback\nfunction getUrlById(id) {\n  const item = mediaOptions.find(m => m.id === id);\n  return item?.url || mediaOptions[id % mediaOptions.length]?.url || mediaOptions[0]?.url;\n}\n\nconst variants = usernames.map((username, vIdx) => {\n  const variantData = aiOutput.variants?.[vIdx] || aiOutput.variants?.[0] || {};\n  const selection = selectionOutput.selections?.find(s => s.variantIndex === vIdx);\n  const mediaIds = selection?.mediaIds || Array.from({length: numClips}, (_, i) => (vIdx * numClips + i) % mediaOptions.length);\n  \n  const variant = {\n    endpoint: baseStructure.endpoint,\n    request_json: {\n      audioUrl: baseStructure.audioUrl,\n      original: baseStructure.original,\n      watermark: '@' + username.replace('@', '')\n    },\n    caption: variantData.mainCaption || baseStructure.caption,\n    description: variantData.description || baseStructure.description,\n    niche: baseStructure.niche,\n    transcription: baseStructure.transcription\n  };\n  \n  if (baseStructure.quote) variant.request_json.quote = baseStructure.quote;\n  if (baseStructure.author) variant.request_json.author = baseStructure.author;\n  if (baseStructure.duration) variant.request_json.duration = baseStructure.duration;\n  if (baseStructure.overlay !== undefined) variant.request_json.overlay = baseStructure.overlay;\n  \n  if (endpointType.isStyleEndpoint) {\n    variant.request_json.imageUrl = getUrlById(mediaIds[0]);\n    variant.request_json.imageDescription = variantData.clipDescriptions?.[0] || baseStructure.description;\n  } else if (endpointType.isVid1Single) {\n    variant.request_json.videoUrl = getUrlById(mediaIds[0]);\n    variant.request_json.videoDescription = variantData.clipDescriptions?.[0] || baseStructure.description;\n  } else if (endpointType.isMultiClip) {\n    variant.request_json.clips = baseStructure.clips.map((clipTiming, cIdx) => ({\n      ...clipTiming,\n      videoUrl: getUrlById(mediaIds[cIdx] ?? cIdx),\n      description: variantData.clipDescriptions?.[cIdx] || 'Video clip'\n    }));\n  }\n  \n  if (baseStructure.captions?.length > 0) {\n    variant.request_json.captions = baseStructure.captions.map((c, i) => ({\n      ...c,\n      alt: variantData.captionAlts?.[i]\n    }));\n  }\n  \n  if (aiOutput.timingAdjustments && variant.request_json.clips) {\n    aiOutput.timingAdjustments.forEach((adj, i) => {\n      if (variant.request_json.clips[i] && adj) {\n        if (adj.start !== undefined) variant.request_json.clips[i].start = adj.start;\n        if (adj.duration !== undefined) variant.request_json.clips[i].duration = adj.duration;\n      }\n    });\n  }\n  \n  return variant;\n});\n\nreturn variants.map(v => ({ json: v }));"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3280,
+        3200,
         -160
       ],
-      "id": "5b413f5d-76c9-4679-85a9-c9a470f67ed1",
+      "id": "9574888b-d266-49bd-a014-99ecc78ae857",
       "name": "Assemble Variants"
     },
     {
@@ -449,10 +449,10 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        272,
+        192,
         -304
       ],
-      "id": "6017c1d3-c82d-4e16-817d-f2d7b6d85c93",
+      "id": "bede475f-7674-4c92-80d3-794313bc6292",
       "name": "Get Entrepreneur",
       "credentials": {
         "notionApi": {
@@ -468,10 +468,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        544,
+        464,
         -304
       ],
-      "id": "1955d93b-a91c-46d1-976f-fc3526fe02a6",
+      "id": "4b7bccc5-a4f9-480d-b652-acd65d4c0102",
       "name": "Users 1"
     },
     {
@@ -499,10 +499,10 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        368,
+        288,
         -112
       ],
-      "id": "08c5d79e-9dd1-482a-b8f0-1a4a4556d024",
+      "id": "9c438dd9-63a8-4805-a135-3cd10498b20c",
       "name": "Get Fitness",
       "credentials": {
         "notionApi": {
@@ -518,10 +518,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        624,
+        544,
         -112
       ],
-      "id": "36d152c0-970c-44e8-bb1b-d02ed5b9f945",
+      "id": "182706d3-8a77-4205-9344-35af7dce1480",
       "name": "Users 2"
     },
     {
@@ -549,10 +549,10 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        720,
+        640,
         160
       ],
-      "id": "641fc375-af81-4e4c-87eb-4fbc80b05573",
+      "id": "35f0e06b-8f01-457c-9597-5de7325ff0ba",
       "name": "Get Motivation",
       "credentials": {
         "notionApi": {
@@ -568,10 +568,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        992,
+        912,
         160
       ],
-      "id": "c1a2472d-5b92-49ef-a5b7-8d720591c667",
+      "id": "44b59f84-e7d2-438f-8744-4a86149cb6d6",
       "name": "Users 3"
     }
   ],
@@ -863,7 +863,8 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "availableInMCP": false
   },
   "staticData": null,
   "meta": {
@@ -873,159 +874,97 @@
     "When Executed by Another Workflow": [
       {
         "json": {
-          "endpoint": "/vid-1.5",
+          "endpoint": "/vid-1.3",
           "request_json": {
-            "quote": "what type of motivation is ts 🌹💔 MOTIVATION",
-            "watermark": null,
-            "audioUrl": "https://vllxucytucjyflsenjmz.supabase.co/storage/v1/object/public/assets/463_audio.mp3",
-            "original": "https://vllxucytucjyflsenjmz.supabase.co/storage/v1/object/public/assets/463_360p.mp4",
-            "overlay": true,
+            "audioUrl": "https://vllxucytucjyflsenjmz.supabase.co/storage/v1/object/public/assets/285_audio.mp3",
+            "audioDescription": "Motivational voiceover with high-quality background music",
+            "watermark": "@luxurymotivation",
             "clips": [
               {
-                "videoUrl": "https://vllxucytucjyflsenjmz.supabase.co/storage/v1/object/public/assets/463_360p.mp4",
-                "begin": 0,
-                "start": 0,
-                "duration": 22,
-                "volume": 100,
-                "description": "A man speaking directly to the camera with glowing, lightning-effect eyes, providing a provocative analogy for building a personal brand."
-              }
-            ],
-            "captions": [
-              {
-                "text": "If you get caught",
+                "videoUrl": "https://example.com/bw-suit-man.mp4",
+                "description": "Black and white clip of man in suit, referencing high-status aesthetics",
                 "start": 0,
                 "duration": 2
               },
               {
-                "text": "Je***ing off",
+                "videoUrl": "https://example.com/man-porsche-exterior.jpg",
+                "description": "Man standing by a grey Porsche 911 GT3 RS outside a classical building",
                 "start": 2,
-                "duration": 1
+                "duration": 2.5
               },
               {
-                "text": "and you stop",
-                "start": 3,
-                "duration": 1
+                "videoUrl": "https://example.com/driving-details-1.mp4",
+                "description": "Close-up of luxury watch on a steering wheel and car details",
+                "start": 4.5,
+                "duration": 3
               },
               {
-                "text": "That's embarrassing",
-                "start": 4,
-                "duration": 1
-              },
-              {
-                "text": "for you",
-                "start": 5,
-                "duration": 1
-              },
-              {
-                "text": "But",
-                "start": 6,
-                "duration": 0.5
-              },
-              {
-                "text": "If you keep going",
-                "start": 6.5,
+                "videoUrl": "https://example.com/high-status-entry.mp4",
+                "description": "Chauffeur service with black Mercedes S-Class and sports car transport",
+                "start": 7.5,
                 "duration": 1.5
               },
               {
-                "text": "Then it becomes embarrassing",
-                "start": 8,
-                "duration": 1
-              },
-              {
-                "text": "For them",
+                "videoUrl": "https://example.com/security-group-watch.mp4",
+                "description": "Group of men/security personnel and luxury interior/watch shots",
                 "start": 9,
-                "duration": 1
-              },
-              {
-                "text": "Especially if it's a dude",
-                "start": 10,
-                "duration": 1
-              },
-              {
-                "text": "I mean now he's",
-                "start": 11,
-                "duration": 1
-              },
-              {
-                "text": "questioning everything about himself.",
-                "start": 12,
-                "duration": 1
-              },
-              {
-                "text": "That's what building",
-                "start": 13,
-                "duration": 1
-              },
-              {
-                "text": "A personal",
-                "start": 14,
-                "duration": 1
-              },
-              {
-                "text": "Brand is like",
-                "start": 15,
-                "duration": 1
-              },
-              {
-                "text": "If you stop halfway,",
-                "start": 16,
-                "duration": 1
-              },
-              {
-                "text": "You just look pathetic.",
-                "start": 17,
-                "duration": 1
-              },
-              {
-                "text": "If you keep",
-                "start": 18,
-                "duration": 1
-              },
-              {
-                "text": "going long enough,",
-                "start": 19,
-                "duration": 1
-              },
-              {
-                "text": "Everyone else gets uncomfortable",
-                "start": 20,
-                "duration": 1
-              },
-              {
-                "text": "For even doubting you.",
-                "start": 21,
-                "duration": 1
+                "duration": 3
               }
-            ]
+            ],
+            "captions": [
+              {
+                "text": "And that's why they call us lucky",
+                "start": 0,
+                "duration": 2.5
+              },
+              {
+                "text": "because they assume that we are gonna",
+                "start": 2.5,
+                "duration": 2
+              },
+              {
+                "text": "input the same",
+                "start": 4.5,
+                "duration": 2.5
+              },
+              {
+                "text": "weak and measly",
+                "start": 7,
+                "duration": 2
+              },
+              {
+                "text": "levels of energy and attention that they would",
+                "start": 9,
+                "duration": 3
+              }
+            ],
+            "duration": 12
           },
-          "caption": "The ultimate motivation? Keep going, even when it's embarrassing. Turn doubt into discomfort for them. #Motivation #PersonalBrand #KeepGoing #Mindset",
-          "description": "This video features a man with intense, glowing, lightning-infused eyes delivering a powerful and somewhat provocative motivational speech. He uses an unconventional analogy involving 'jerking off' to illustrate the concept of building a personal brand. The core message is that if you stop halfway, you look pathetic, but if you persevere long enough, you make others uncomfortable for ever doubting you. The tone is aggressive and determined, aimed at inspiring relentless effort despite potential embarrassment or opposition. The visual effects of the glowing eyes add a mystical and intense vibe to the motivational message.",
+          "caption": "Success isn't luck; it's the energy and attention you input daily.",
+          "description": "Motivational reel mixing cinematic luxury footage with a voiceover quote about effort and perception.",
           "niche": "general motivation",
           "transcription": true
-        },
-        "pairedItem": {
-          "item": 0
         }
       }
     ]
   },
-  "versionId": "dd6e68d3-8083-4467-9f50-10eebced1ffb",
-  "activeVersionId": "dd6e68d3-8083-4467-9f50-10eebced1ffb",
+  "versionId": "10af1940-c104-4c33-bca6-7f655bc4adf0",
+  "activeVersionId": "10af1940-c104-4c33-bca6-7f655bc4adf0",
   "triggerCount": 0,
   "shared": [
     {
-      "updatedAt": "2025-11-12T08:52:24.157Z",
-      "createdAt": "2025-11-12T08:52:24.157Z",
+      "updatedAt": "2025-12-30T08:47:22.959Z",
+      "createdAt": "2025-12-30T08:47:22.959Z",
       "role": "workflow:owner",
-      "workflowId": "bZxFUrOPmVEbMTkA",
+      "workflowId": "7eNS1MnWLn9hEZ0G",
       "projectId": "bnvMSIIUgNfVjAJN"
     }
   ],
   "activeVersion": {
-    "updatedAt": "2025-12-30T08:58:55.000Z",
-    "createdAt": "2025-12-30T08:48:42.977Z",
-    "versionId": "dd6e68d3-8083-4467-9f50-10eebced1ffb",
-    "workflowId": "bZxFUrOPmVEbMTkA",
+    "updatedAt": "2025-12-30T09:03:34.000Z",
+    "createdAt": "2025-12-30T09:03:30.479Z",
+    "versionId": "10af1940-c104-4c33-bca6-7f655bc4adf0",
+    "workflowId": "7eNS1MnWLn9hEZ0G",
     "nodes": [
       {
         "parameters": {
@@ -1037,7 +976,7 @@
           -448,
           -192
         ],
-        "id": "048baa5c-163d-4096-a8ec-e9bc6f121d2f",
+        "id": "0b6a644f-8137-4a51-bcc3-3e8253cc1fba",
         "name": "When Executed by Another Workflow"
       },
       {
@@ -1067,10 +1006,10 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2,
         "position": [
-          -64,
+          -144,
           -192
         ],
-        "id": "0b819af1-1cb1-49d7-af0d-1e3e96f3bf70",
+        "id": "47dbe0f9-ccb7-421b-8814-e3742cec7bd5",
         "name": "Entrepreneur"
       },
       {
@@ -1100,10 +1039,10 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2,
         "position": [
-          112,
+          32,
           16
         ],
-        "id": "559e2e58-901f-4f84-9e0d-6478b4009b7d",
+        "id": "161c947e-a66a-4c24-85ca-89f3bff2fcce",
         "name": "Fitness"
       },
       {
@@ -1133,10 +1072,10 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2,
         "position": [
-          384,
+          304,
           176
         ],
-        "id": "766f14a7-73d5-4d10-a7f3-8dcf7620ef2e",
+        "id": "96a0d71d-1f88-4178-a4fa-6304c914cc0c",
         "name": "General Motivation"
       },
       {
@@ -1146,26 +1085,26 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          1200,
+          1120,
           -160
         ],
-        "id": "dfb4d75d-7d9a-43f6-a07e-4632cb40c621",
+        "id": "40cd052a-9ccf-464c-b56a-5a1b1f8fdbaa",
         "name": "Extract Base Data"
       },
       {
         "parameters": {
           "promptType": "define",
-          "text": "=Generate search terms and text rewrites.\n\nINPUT:\n- Description: {{ $json.forAI.description }}\n- Variants: {{ $json.forAI.numVariants }}\n- Clips: {{ $json.forAI.numClips }}\n- Media: {{ $json.forAI.mediaType }}\n- Transcription: {{ $json.forAI.transcriptionRequired }}\n- AudioUrl: {{ $json.forAI.audioUrl }}\n- Original Captions: {{ JSON.stringify($json.forAI.originalCaptions) }}\n- MainCaption: {{ $json.forAI.originalMainCaption }}\n- ClipDescs: {{ JSON.stringify($json.forAI.originalClipDescriptions) }}\n\nTASKS:\n1. Generate 2-3 Pexels search terms from description\n2. IF transcription=true AND audioUrl exists:\n   - CALL the Transcription tool with the audioUrl to get word-level timestamps\n   - Use the transcript data to correct caption text and timing\n   - Match caption boundaries to actual spoken words for perfect sync\n3. Generate rewrites for EACH variant\n\nOUTPUT (JSON only):\n{\n  \"searchTerms\": [\"term1\", \"term2\"],\n  \"transcriptData\": null OR {transcript object from tool},\n  \"timingAdjustments\": null OR {\n    \"captions\": [{\"text\": \"corrected text\", \"start\": 0.1, \"duration\": 1.8}]\n  },\n  \"variants\": [\n    {\n      \"captionAlts\": [\"rewrite1\"],\n      \"description\": \"rewritten desc\",\n      \"mainCaption\": \"rewritten caption #hashtags\",\n      \"clipDescriptions\": [\"clip1\", \"clip2\"]\n    }\n  ]\n}\n\nRULES:\n- searchTerms: key themes (travel, success, fitness)\n- Each variant: DIFFERENT wording, SAME meaning\n- clipDescriptions: exactly {{ $json.forAI.numClips }} items\n- If transcription=true, timingAdjustments.captions array must have corrected text and timing based on actual transcript\n- JSON only, no markdown",
+          "text": "=Generate search terms and text rewrites.\n\nINPUT:\n- Description: {{ $json.forAI.description }}\n- Variants: {{ $json.forAI.numVariants }}\n- Clips: {{ $json.forAI.numClips }}\n- Media: {{ $json.forAI.mediaType }}\n- Transcription: {{ $json.forAI.transcriptionRequired }}\n- AudioUrl: {{ $json.forAI.audioUrl }}\n- Captions: {{ JSON.stringify($json.forAI.originalCaptions) }}\n- MainCaption: {{ $json.forAI.originalMainCaption }}\n- ClipDescs: {{ JSON.stringify($json.forAI.originalClipDescriptions) }}\n\nTASKS:\n1. Generate 2-3 Pexels search terms from description\n2. IF transcription=true AND audioUrl exists:\n   - CALL the Transcription tool with the audioUrl to get word-level timestamps\n   - Use the transcript data to correct caption text and timing\n   - Match caption boundaries to actual spoken words for perfect sync\n3. Generate rewrites for EACH variant\n\nOUTPUT (JSON only):\n{\n  \"searchTerms\": [\"term1\", \"term2\"],\n  \"timingAdjustments\": null,\n  \"variants\": [\n    {\n      \"captionAlts\": [\"rewrite1\"],\n      \"description\": \"rewritten desc\",\n      \"mainCaption\": \"rewritten caption #hashtags\",\n      \"clipDescriptions\": [\"clip1\", \"clip2\"]\n    }\n  ]\n}\n\nRULES:\n- searchTerms: key themes (travel, success, fitness)\n- Each variant: DIFFERENT wording, SAME meaning\n- clipDescriptions: exactly {{ $json.forAI.numClips }} items\n- JSON only, no markdown",
           "needsFallback": true,
           "options": {}
         },
         "type": "@n8n/n8n-nodes-langchain.agent",
         "typeVersion": 2.2,
         "position": [
-          1552,
+          1472,
           -160
         ],
-        "id": "2df1d05f-d127-4d7d-bf2d-9428c9354417",
+        "id": "d764815c-e75c-4e46-ae2c-7106aa51fe7f",
         "name": "AI Agent 1: Rewrites",
         "retryOnFail": true
       },
@@ -1176,10 +1115,10 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
         "typeVersion": 1,
         "position": [
-          1536,
+          1456,
           192
         ],
-        "id": "da412f26-0db7-49cb-b038-e307bc919a3b",
+        "id": "116b9189-6e6d-452c-8590-f263215e870a",
         "name": "Gemini 1",
         "credentials": {
           "googlePalmApi": {
@@ -1196,10 +1135,10 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
         "typeVersion": 1,
         "position": [
-          1360,
+          1280,
           192
         ],
-        "id": "21134dda-2dd4-4fb7-beb3-628565dbe1ac",
+        "id": "81ec2853-9b0d-45d7-ac87-1ec122a07318",
         "name": "Groq 1",
         "credentials": {
           "groqApi": {
@@ -1226,10 +1165,10 @@
         "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
         "typeVersion": 2.2,
         "position": [
-          1680,
+          1600,
           192
         ],
-        "id": "0c5ab199-46fa-43eb-86f3-d0555c7bf580",
+        "id": "45058d9d-b582-4670-8984-c41f1916fc94",
         "name": "Transcription"
       },
       {
@@ -1239,10 +1178,10 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          1920,
+          1840,
           -160
         ],
-        "id": "bfa49123-9557-479f-abdb-8244bdbb72ef",
+        "id": "d4377953-7972-486c-aa1b-0bae46a98d4b",
         "name": "Parse AI 1"
       },
       {
@@ -1272,10 +1211,10 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2,
         "position": [
-          2128,
+          2048,
           -160
         ],
-        "id": "7a446c65-baf2-483a-880c-944942e55d52",
+        "id": "22ac8177-9b28-4dd1-928a-a43239071bbf",
         "name": "Image or Video?"
       },
       {
@@ -1308,10 +1247,10 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
         "position": [
-          2368,
+          2288,
           -320
         ],
-        "id": "4d137ab0-4654-48e6-8763-d53a4ec05bac",
+        "id": "69ba757e-89f8-42d4-a7d1-8438e486ed24",
         "name": "Fetch Pexels Images"
       },
       {
@@ -1344,10 +1283,10 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
         "position": [
-          2368,
+          2288,
           -16
         ],
-        "id": "67b9d112-03ab-4733-a453-4cce4f782c0c",
+        "id": "e55fcff7-a0df-405e-b158-bacf5972a626",
         "name": "Fetch Pexels Videos"
       },
       {
@@ -1357,10 +1296,10 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          2624,
+          2544,
           -320
         ],
-        "id": "3b75ebaa-62ce-43c3-9955-c0dd18762f91",
+        "id": "bc16b343-f6b6-454c-91e6-61a3f0678e84",
         "name": "Extract Image Options"
       },
       {
@@ -1370,10 +1309,10 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          2624,
+          2544,
           -16
         ],
-        "id": "da285c05-54b6-44a8-b1be-a06708f04fa5",
+        "id": "1694f06f-192b-4c54-bb8a-fecc302eaa07",
         "name": "Extract Video Options"
       },
       {
@@ -1386,10 +1325,10 @@
         "type": "@n8n/n8n-nodes-langchain.agent",
         "typeVersion": 2.2,
         "position": [
-          2928,
+          2848,
           -160
         ],
-        "id": "d247e064-f544-461b-9bf6-958645d49a9c",
+        "id": "4e07c911-149f-45bd-8861-d9723c98f677",
         "name": "AI Agent 2: URL Selector",
         "retryOnFail": true
       },
@@ -1400,10 +1339,10 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
         "typeVersion": 1,
         "position": [
-          2928,
+          2848,
           144
         ],
-        "id": "72ac0482-ef9a-4383-bee8-f89ffe7616c9",
+        "id": "ef1ef049-a735-494b-9b2c-3388cb491f8f",
         "name": "Gemini 2",
         "credentials": {
           "googlePalmApi": {
@@ -1420,10 +1359,10 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
         "typeVersion": 1,
         "position": [
-          2768,
+          2688,
           144
         ],
-        "id": "fcd43354-dba1-4c5b-b58b-dcce724e76cb",
+        "id": "ee216423-4034-4718-9313-6d650e00b9c4",
         "name": "Groq 2",
         "credentials": {
           "groqApi": {
@@ -1434,15 +1373,15 @@
       },
       {
         "parameters": {
-          "jsCode": "// Parse AI selection and assemble final variants\nconst raw = $json.output;\nconst cleaned = raw.replace(/^```json\\s*/i, '').replace(/```$/i, '').trim();\nlet selectionOutput;\ntry { selectionOutput = JSON.parse(cleaned); } catch (e) { selectionOutput = { selections: [] }; }\n\n// Get data from Parse AI 1 (always executed, before the branch)\nconst parseData = $('Parse AI 1').first().json;\nconst { aiOutput, extractData } = parseData;\nconst { baseStructure, endpointType, usernames } = extractData;\nconst numClips = extractData.forAI.numClips;\n\n// Get mediaOptions - try both Extract nodes (only one will have run)\nlet mediaOptions = [];\ntry { mediaOptions = $('Extract Image Options').first()?.json?.mediaOptions || []; } catch(e) {}\nif (mediaOptions.length === 0) {\n  try { mediaOptions = $('Extract Video Options').first()?.json?.mediaOptions || []; } catch(e) {}\n}\n\n// Helper to get URL by ID with fallback\nfunction getUrlById(id) {\n  const item = mediaOptions.find(m => m.id === id);\n  return item?.url || mediaOptions[id % mediaOptions.length]?.url || mediaOptions[0]?.url;\n}\n\nconst variants = usernames.map((username, vIdx) => {\n  const variantData = aiOutput.variants?.[vIdx] || aiOutput.variants?.[0] || {};\n  const selection = selectionOutput.selections?.find(s => s.variantIndex === vIdx);\n  const mediaIds = selection?.mediaIds || Array.from({length: numClips}, (_, i) => (vIdx * numClips + i) % mediaOptions.length);\n  \n  const variant = {\n    endpoint: baseStructure.endpoint,\n    request_json: {\n      audioUrl: baseStructure.audioUrl,\n      original: baseStructure.original,\n      watermark: '@' + username.replace('@', '')\n    },\n    caption: variantData.mainCaption || baseStructure.caption,\n    description: variantData.description || baseStructure.description,\n    niche: baseStructure.niche,\n    transcription: baseStructure.transcription\n  };\n  \n  if (baseStructure.quote) variant.request_json.quote = baseStructure.quote;\n  if (baseStructure.author) variant.request_json.author = baseStructure.author;\n  if (baseStructure.duration) variant.request_json.duration = baseStructure.duration;\n  if (baseStructure.overlay !== undefined) variant.request_json.overlay = baseStructure.overlay;\n  \n  if (endpointType.isStyleEndpoint) {\n    variant.request_json.imageUrl = getUrlById(mediaIds[0]);\n    variant.request_json.imageDescription = variantData.clipDescriptions?.[0] || baseStructure.description;\n  } else if (endpointType.isVid1Single) {\n    variant.request_json.videoUrl = getUrlById(mediaIds[0]);\n    variant.request_json.videoDescription = variantData.clipDescriptions?.[0] || baseStructure.description;\n  } else if (endpointType.isMultiClip) {\n    variant.request_json.clips = baseStructure.clips.map((clipTiming, cIdx) => ({\n      ...clipTiming,\n      videoUrl: getUrlById(mediaIds[cIdx] ?? cIdx),\n      description: variantData.clipDescriptions?.[cIdx] || 'Video clip'\n    }));\n  }\n  \n  // Apply caption timing and text corrections from transcription (if available)\n  if (aiOutput.timingAdjustments?.captions && baseStructure.captions?.length > 0) {\n    // Use corrected captions from AI (based on transcript)\n    variant.request_json.captions = aiOutput.timingAdjustments.captions.map((correctedCaption, i) => ({\n      text: correctedCaption.text,\n      start: correctedCaption.start,\n      duration: correctedCaption.duration,\n      alt: variantData.captionAlts?.[i] || baseStructure.captions[i]?.text\n    }));\n  } else if (baseStructure.captions?.length > 0) {\n    // No transcription corrections, use original captions with alt text\n    variant.request_json.captions = baseStructure.captions.map((c, i) => ({\n      text: c.text,\n      start: c.start,\n      duration: c.duration,\n      alt: variantData.captionAlts?.[i]\n    }));\n  }\n  \n  // Add transcript data for reference if available\n  if (aiOutput.transcriptData) {\n    variant.transcriptData = aiOutput.transcriptData;\n  }\n  \n  return variant;\n});\n\nreturn variants.map(v => ({ json: v }));"
+          "jsCode": "// Parse AI selection and assemble final variants\nconst raw = $json.output;\nconst cleaned = raw.replace(/^```json\\s*/i, '').replace(/```$/i, '').trim();\nlet selectionOutput;\ntry { selectionOutput = JSON.parse(cleaned); } catch (e) { selectionOutput = { selections: [] }; }\n\n// Get data from Parse AI 1 (always executed, before the branch)\nconst parseData = $('Parse AI 1').first().json;\nconst { aiOutput, extractData } = parseData;\nconst { baseStructure, endpointType, usernames } = extractData;\nconst numClips = extractData.forAI.numClips;\n\n// Get mediaOptions - try both Extract nodes (only one will have run)\nlet mediaOptions = [];\ntry { mediaOptions = $('Extract Image Options').first()?.json?.mediaOptions || []; } catch(e) {}\nif (mediaOptions.length === 0) {\n  try { mediaOptions = $('Extract Video Options').first()?.json?.mediaOptions || []; } catch(e) {}\n}\n\n// Helper to get URL by ID with fallback\nfunction getUrlById(id) {\n  const item = mediaOptions.find(m => m.id === id);\n  return item?.url || mediaOptions[id % mediaOptions.length]?.url || mediaOptions[0]?.url;\n}\n\nconst variants = usernames.map((username, vIdx) => {\n  const variantData = aiOutput.variants?.[vIdx] || aiOutput.variants?.[0] || {};\n  const selection = selectionOutput.selections?.find(s => s.variantIndex === vIdx);\n  const mediaIds = selection?.mediaIds || Array.from({length: numClips}, (_, i) => (vIdx * numClips + i) % mediaOptions.length);\n  \n  const variant = {\n    endpoint: baseStructure.endpoint,\n    request_json: {\n      audioUrl: baseStructure.audioUrl,\n      original: baseStructure.original,\n      watermark: '@' + username.replace('@', '')\n    },\n    caption: variantData.mainCaption || baseStructure.caption,\n    description: variantData.description || baseStructure.description,\n    niche: baseStructure.niche,\n    transcription: baseStructure.transcription\n  };\n  \n  if (baseStructure.quote) variant.request_json.quote = baseStructure.quote;\n  if (baseStructure.author) variant.request_json.author = baseStructure.author;\n  if (baseStructure.duration) variant.request_json.duration = baseStructure.duration;\n  if (baseStructure.overlay !== undefined) variant.request_json.overlay = baseStructure.overlay;\n  \n  if (endpointType.isStyleEndpoint) {\n    variant.request_json.imageUrl = getUrlById(mediaIds[0]);\n    variant.request_json.imageDescription = variantData.clipDescriptions?.[0] || baseStructure.description;\n  } else if (endpointType.isVid1Single) {\n    variant.request_json.videoUrl = getUrlById(mediaIds[0]);\n    variant.request_json.videoDescription = variantData.clipDescriptions?.[0] || baseStructure.description;\n  } else if (endpointType.isMultiClip) {\n    variant.request_json.clips = baseStructure.clips.map((clipTiming, cIdx) => ({\n      ...clipTiming,\n      videoUrl: getUrlById(mediaIds[cIdx] ?? cIdx),\n      description: variantData.clipDescriptions?.[cIdx] || 'Video clip'\n    }));\n  }\n  \n  if (baseStructure.captions?.length > 0) {\n    variant.request_json.captions = baseStructure.captions.map((c, i) => ({\n      ...c,\n      alt: variantData.captionAlts?.[i]\n    }));\n  }\n  \n  if (aiOutput.timingAdjustments && variant.request_json.clips) {\n    aiOutput.timingAdjustments.forEach((adj, i) => {\n      if (variant.request_json.clips[i] && adj) {\n        if (adj.start !== undefined) variant.request_json.clips[i].start = adj.start;\n        if (adj.duration !== undefined) variant.request_json.clips[i].duration = adj.duration;\n      }\n    });\n  }\n  \n  return variant;\n});\n\nreturn variants.map(v => ({ json: v }));"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          3280,
+          3200,
           -160
         ],
-        "id": "5b413f5d-76c9-4679-85a9-c9a470f67ed1",
+        "id": "9574888b-d266-49bd-a014-99ecc78ae857",
         "name": "Assemble Variants"
       },
       {
@@ -1470,10 +1409,10 @@
         "type": "n8n-nodes-base.notion",
         "typeVersion": 2.2,
         "position": [
-          272,
+          192,
           -304
         ],
-        "id": "6017c1d3-c82d-4e16-817d-f2d7b6d85c93",
+        "id": "bede475f-7674-4c92-80d3-794313bc6292",
         "name": "Get Entrepreneur",
         "credentials": {
           "notionApi": {
@@ -1489,10 +1428,10 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          544,
+          464,
           -304
         ],
-        "id": "1955d93b-a91c-46d1-976f-fc3526fe02a6",
+        "id": "4b7bccc5-a4f9-480d-b652-acd65d4c0102",
         "name": "Users 1"
       },
       {
@@ -1520,10 +1459,10 @@
         "type": "n8n-nodes-base.notion",
         "typeVersion": 2.2,
         "position": [
-          368,
+          288,
           -112
         ],
-        "id": "08c5d79e-9dd1-482a-b8f0-1a4a4556d024",
+        "id": "9c438dd9-63a8-4805-a135-3cd10498b20c",
         "name": "Get Fitness",
         "credentials": {
           "notionApi": {
@@ -1539,10 +1478,10 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          624,
+          544,
           -112
         ],
-        "id": "36d152c0-970c-44e8-bb1b-d02ed5b9f945",
+        "id": "182706d3-8a77-4205-9344-35af7dce1480",
         "name": "Users 2"
       },
       {
@@ -1570,10 +1509,10 @@
         "type": "n8n-nodes-base.notion",
         "typeVersion": 2.2,
         "position": [
-          720,
+          640,
           160
         ],
-        "id": "641fc375-af81-4e4c-87eb-4fbc80b05573",
+        "id": "35f0e06b-8f01-457c-9597-5de7325ff0ba",
         "name": "Get Motivation",
         "credentials": {
           "notionApi": {
@@ -1589,10 +1528,10 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          992,
+          912,
           160
         ],
-        "id": "c1a2472d-5b92-49ef-a5b7-8d720591c667",
+        "id": "44b59f84-e7d2-438f-8744-4a86149cb6d6",
         "name": "Users 3"
       }
     ],
@@ -1884,7 +1823,7 @@
       }
     },
     "authors": "Debabrata Maitra",
-    "name": "v7",
+    "name": "Version 10af1940",
     "description": "",
     "autosaved": false
   },
