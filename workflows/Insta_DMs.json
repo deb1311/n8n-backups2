@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-12-30T09:00:43.176Z",
+  "updatedAt": "2025-12-30T15:09:05.994Z",
   "createdAt": "2025-11-07T18:51:21.243Z",
   "id": "KfJT1b9qUCm9Nln0",
   "name": "Insta DMs",
@@ -89,7 +89,11 @@
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
-          "value": {}
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
         },
         "options": {}
       },
@@ -360,7 +364,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "fed8b9d6-5072-4bd2-b647-4344316c5c08",
+  "versionId": "afdcbbbf-ee91-4281-8463-0c4c6241786f",
   "activeVersionId": "fed8b9d6-5072-4bd2-b647-4344316c5c08",
   "triggerCount": 1,
   "shared": [
