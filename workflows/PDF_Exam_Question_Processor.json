@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-02T20:26:04.454Z",
+  "updatedAt": "2026-01-03T19:54:41.137Z",
   "createdAt": "2026-01-02T20:12:17.344Z",
   "id": "jDJwdh2Z7ClpiVLB",
   "name": "PDF Exam Question Processor",
@@ -13,25 +13,25 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "b6ba6475-6ec3-4eb6-8553-fc2c22fa8d32",
+      "id": "585dde5a-e133-4910-9e89-ba21f1e02456",
       "name": "Webhook Trigger",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1.1,
       "position": [
-        7088,
-        2096
+        9824,
+        3232
       ],
-      "webhookId": "5cc33c59-0f46-4099-88af-755e928aec66"
+      "webhookId": "5c156963-824a-46ad-b274-5d6661a77d71"
     },
     {
       "parameters": {},
-      "id": "358b3cb5-74db-4a70-86e5-00a1c7de2453",
+      "id": "52b4924f-c3fe-40ed-9b16-c56443446111",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        7088,
-        2304
+        9824,
+        3440
       ]
     },
     {
@@ -66,13 +66,13 @@
         },
         "options": {}
       },
-      "id": "21493896-1719-4678-a9de-63e022b535a1",
+      "id": "172a19a0-df3a-47da-8446-fc4f4e1c94ed",
       "name": "Form Trigger",
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2,
       "position": [
-        7088,
-        2496
+        9824,
+        3632
       ],
       "webhookId": "pdf-form"
     },
@@ -87,46 +87,19 @@
           }
         }
       },
-      "id": "e4ad12fa-a8b6-47fa-bd7a-adb880f1f6da",
+      "id": "0c6e93c7-5cf7-4c81-b6b5-172294196e3b",
       "name": "Download PDF",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        7360,
-        2496
-      ]
-    },
-    {
-      "parameters": {
-        "mode": "rename",
-        "options": {}
-      },
-      "id": "134aa6c4-03a0-487c-9780-81cae0b7761b",
-      "name": "Rename to PDF",
-      "type": "n8n-nodes-base.moveBinaryData",
-      "typeVersion": 1,
-      "position": [
-        7600,
-        2496
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "// Get form data\nconst formData = $('Form Trigger').first().json;\n\nreturn [{\n  json: {\n    exam: formData['Exam'] || 'jee-main',\n    year: formData['Year'] || '2024',\n    subject: formData['Subject'] || 'physics',\n    chapter: formData['Chapter'] || 'general'\n  },\n  binary: $input.first().binary\n}];"
-      },
-      "id": "0b96740d-205e-4122-9a15-28598ba0c40f",
-      "name": "Add Form Data",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        7840,
-        2496
+        10096,
+        3632
       ]
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "https://pdf-processor-865153977800.asia-south1.run.app/process",
+        "url": "https://pdf-processor-865153977800.europe-west1.run.app/process",
         "sendBody": true,
         "contentType": "multipart-form-data",
         "bodyParameters": {
@@ -134,23 +107,23 @@
             {
               "parameterType": "formBinaryData",
               "name": "file",
-              "inputDataFieldName": "pdfFile"
+              "inputDataFieldName": "data"
             },
             {
               "name": "exam",
-              "value": "={{ $json.exam }}"
+              "value": "={{ $('Form Trigger').first().json['Exam'] || 'jee-main' }}"
             },
             {
               "name": "year",
-              "value": "={{ $json.year }}"
+              "value": "={{ $('Form Trigger').first().json['Year'] || '2024' }}"
             },
             {
               "name": "subject",
-              "value": "={{ $json.subject }}"
+              "value": "={{ $('Form Trigger').first().json['Subject'] || 'physics' }}"
             },
             {
               "name": "chapter",
-              "value": "={{ $json.chapter }}"
+              "value": "={{ $('Form Trigger').first().json['Chapter'] || 'general' }}"
             }
           ]
         },
@@ -158,19 +131,19 @@
           "timeout": 300000
         }
       },
-      "id": "0f4673f2-b37f-49b2-9d91-9efe3873c423",
+      "id": "a17ead60-39a3-4fce-bdd7-98b637575eda",
       "name": "Process PDF (Form)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        8080,
-        2496
+        10336,
+        3632
       ]
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "https://pdf-processor-865153977800.asia-south1.run.app/process",
+        "url": "https://pdf-processor-865153977800.europe-west1.run.app/process",
         "sendBody": true,
         "contentType": "multipart-form-data",
         "bodyParameters": {
@@ -186,26 +159,26 @@
           "timeout": 300000
         }
       },
-      "id": "ce240f4a-ed78-4b25-aba1-91de5ed9b143",
+      "id": "a0a5d449-d599-4ad4-9a78-c4cb0162afa1",
       "name": "Process PDF",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        7360,
-        2208
+        10096,
+        3344
       ]
     },
     {
       "parameters": {
         "jsCode": "const response = $input.first().json;\n\nif (!response.questions || response.questions.length === 0) {\n  throw new Error('No questions returned from processor');\n}\n\nconst items = response.questions.map(q => ({\n  json: {\n    ...q,\n    s3KeyPrefix: response.s3KeyPrefix,\n    sourcePdf: response.sourcePdf,\n    exam: response.exam,\n    year: response.year,\n    subject: response.subject,\n    chapter: response.chapter,\n    totalQuestions: response.totalQuestions\n  }\n}));\n\nreturn items;"
       },
-      "id": "9b6b63cf-314b-48bc-926b-19ac7d253b9f",
+      "id": "df035eb0-c848-4267-8038-01f3d0f21c7b",
       "name": "Prepare Upload Items",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8320,
-        2304
+        10576,
+        3440
       ]
     },
     {
@@ -213,71 +186,89 @@
         "batchSize": 5,
         "options": {}
       },
-      "id": "21242749-9806-48fc-8f09-996141502224",
+      "id": "eb9c5f9e-8926-41e8-a307-f9b6d9c34adf",
       "name": "Loop Over Items",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        8560,
-        2304
+        10816,
+        3440
       ]
     },
     {
       "parameters": {
         "jsCode": "const item = $input.first().json;\nconst binaryData = Buffer.from(item.imageBase64, 'base64');\n\nreturn [{\n  json: {\n    sequenceIndex: item.sequenceIndex,\n    page: item.page,\n    ocrFallback: item.ocrFallback,\n    detectedNumber: item.detectedNumber,\n    s3Key: `${item.s3KeyPrefix}/${item.suggestedFilename}`,\n    s3KeyPrefix: item.s3KeyPrefix,\n    sourcePdf: item.sourcePdf,\n    exam: item.exam,\n    year: item.year,\n    subject: item.subject,\n    chapter: item.chapter,\n    totalQuestions: item.totalQuestions\n  },\n  binary: {\n    data: await this.helpers.prepareBinaryData(binaryData, item.suggestedFilename, 'image/webp')\n  }\n}];"
       },
-      "id": "95b14308-fe3c-43d7-b5a8-3be07436a746",
+      "id": "708703f4-5a83-4aa9-996a-06ced6919723",
       "name": "Convert Base64",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8800,
-        2304
+        11056,
+        3264
       ]
     },
     {
       "parameters": {
         "operation": "upload",
-        "bucketName": "={{ $env.S3_BUCKET_NAME }}",
+        "bucketName": "=questions",
         "fileName": "={{ $json.s3Key }}",
-        "additionalFields": {
-          "acl": "public-read"
-        }
+        "additionalFields": {}
       },
-      "id": "8b4e058c-1108-490d-aa95-5304930600e2",
+      "id": "0e768ba2-fe53-4e07-8e43-70fd2884db64",
       "name": "Upload to S3",
       "type": "n8n-nodes-base.s3",
       "typeVersion": 1,
       "position": [
-        9040,
-        2304
+        11296,
+        3264
       ],
-      "disabled": true
+      "credentials": {
+        "s3": {
+          "id": "qPRJo0yK63YYqCLJ",
+          "name": "S3 account"
+        }
+      }
     },
     {
       "parameters": {
         "jsCode": "const item = $input.first().json;\nconst publicDomain = $env.S3_PUBLIC_DOMAIN || '';\nconst bucketName = $env.S3_BUCKET_NAME || 'exam-questions';\n\nlet imageUrl;\nif (publicDomain) {\n  imageUrl = `${publicDomain}/${item.s3Key}`;\n} else {\n  imageUrl = `https://${bucketName}.s3.amazonaws.com/${item.s3Key}`;\n}\n\nreturn [{\n  json: {\n    sequenceIndex: item.sequenceIndex,\n    page: item.page,\n    imageUrl: imageUrl,\n    ocrFallback: item.ocrFallback,\n    detectedNumber: item.detectedNumber,\n    sourcePdf: item.sourcePdf,\n    exam: item.exam,\n    year: item.year,\n    subject: item.subject,\n    chapter: item.chapter,\n    totalQuestions: item.totalQuestions\n  }\n}];"
       },
-      "id": "f5da2f30-7718-4e2c-a3e2-c3fe1cb94f7d",
+      "id": "91050875-5844-43b4-94cd-943a4a635113",
       "name": "Build URL",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        9280,
-        2304
+        11568,
+        3264
       ]
     },
     {
       "parameters": {
         "jsCode": "const items = $input.all();\n\nconst questions = items\n  .map(item => item.json)\n  .sort((a, b) => a.sequenceIndex - b.sequenceIndex);\n\nconst firstItem = questions[0];\n\nreturn [{\n  json: {\n    sourcePdf: firstItem.sourcePdf,\n    exam: firstItem.exam,\n    year: firstItem.year,\n    subject: firstItem.subject,\n    chapter: firstItem.chapter,\n    totalQuestions: questions.length,\n    processedAt: new Date().toISOString(),\n    questions: questions.map(q => ({\n      sequenceIndex: q.sequenceIndex,\n      page: q.page,\n      imageUrl: q.imageUrl,\n      ocrFallback: q.ocrFallback,\n      detectedNumber: q.detectedNumber\n    }))\n  }\n}];"
       },
-      "id": "9fc24532-693b-4261-b634-f93ffbd0568e",
+      "id": "a551079f-c1ef-461e-8d01-ca405faf2649",
       "name": "Assemble Output",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        9760,
-        2304
+        12016,
+        3456
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json, null, 2) }}",
+        "options": {}
+      },
+      "id": "680ff6c2-c7fc-47ef-b9c9-bb512855775d",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        12256,
+        3456
       ]
     }
   ],
@@ -316,28 +307,6 @@
       ]
     },
     "Download PDF": {
-      "main": [
-        [
-          {
-            "node": "Rename to PDF",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Rename to PDF": {
-      "main": [
-        [
-          {
-            "node": "Add Form Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Add Form Data": {
       "main": [
         [
           {
@@ -423,7 +392,13 @@
     },
     "Assemble Output": {
       "main": [
-        []
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
@@ -436,7 +411,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "4b230fb6-b764-4086-a071-bf56b60f093d",
+  "versionId": "4934ce57-65ff-481d-a28c-cc15edef25e3",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [

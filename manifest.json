@@ -1,13 +1,13 @@
 {
-  "lastBackup": "2026-01-03T15:01:12.220Z",
+  "lastBackup": "2026-01-03T20:00:19.632Z",
   "totalWorkflows": 10,
   "archivedWorkflows": 20,
-  "backedUpWorkflows": 0,
-  "skippedWorkflows": 10,
+  "backedUpWorkflows": 1,
+  "skippedWorkflows": 9,
   "deletedFiles": 0,
   "folders": {
     "workflows": 10
   },
-  "commitCount": 0,
-  "lastBackupType": "no-changes"
+  "commitCount": 1,
+  "lastBackupType": "incremental"
 }
