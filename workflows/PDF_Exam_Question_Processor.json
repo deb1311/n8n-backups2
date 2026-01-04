@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-03T19:54:41.137Z",
+  "updatedAt": "2026-01-03T20:15:11.904Z",
   "createdAt": "2026-01-02T20:12:17.344Z",
   "id": "jDJwdh2Z7ClpiVLB",
   "name": "PDF Exam Question Processor",
@@ -255,21 +255,6 @@
         12016,
         3456
       ]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify($json, null, 2) }}",
-        "options": {}
-      },
-      "id": "680ff6c2-c7fc-47ef-b9c9-bb512855775d",
-      "name": "Respond",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [
-        12256,
-        3456
-      ]
     }
   ],
   "connections": {
@@ -392,13 +377,7 @@
     },
     "Assemble Output": {
       "main": [
-        [
-          {
-            "node": "Respond",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     }
   },
@@ -411,7 +390,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "4934ce57-65ff-481d-a28c-cc15edef25e3",
+  "versionId": "54cd0d48-05cf-4082-ba1a-a9c94b998284",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
