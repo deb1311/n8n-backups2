@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-01-11T19:10:51.860Z",
+  "updatedAt": "2026-01-11T20:50:40.344Z",
   "createdAt": "2026-01-11T18:58:27.595Z",
   "id": "tNzfgDlW70KIOhOd",
   "name": "data extractor",
@@ -41,6 +41,112 @@
       ],
       "id": "d177fe0e-c2d3-4abf-88e6-9140777cd21d",
       "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        448,
+        -16
+      ],
+      "id": "3cc8eb97-ef58-4591-8316-5f85a27a53ff",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are given an array of scraped exam questions.\n\nFor EACH question, perform the following tasks:\n\nA. STRUCTURE\n- Keep the question text EXACTLY unchanged.\n- Preserve all URLs present anywhere in the text or explanation.\n- Ensure the final object follows this schema EXACTLY:\n\n{\n  \"id\": string,\n  \"legacy_id\": string | null,\n\n  \"exam\": string,\n  \"year\": number,\n\n  \"subject\": string,\n  \"stream\": string,\n  \"chapter\": string,\n  \"topic\": string,\n\n  \"question_number\": number,\n  \"type\": \"MCQ\",\n\n  \"question_text\": string,\n\n  \"options\": [\n    {\n      \"id\": string,\n      \"text\": string,\n      \"isCorrect\": boolean\n    }\n  ],\n\n  \"marks\": number | null,\n  \"negative_marks\": number | null,\n  \"time_limit_sec\": number,\n\n  \"difficulty\": \"easy\" | \"medium\" | \"hard\" | null,\n\n  \"solution\": {\n    \"explanation\": string | null,\n    \"source\": string | null\n  },\n\n  \"meta\": {\n    \"verified\": boolean,\n    \"version\": number\n  }\n}\n\nB. EXPLANATION (CLEAN-ROOM)\n- Rewrite the explanation in your own words.\n- Do NOT copy any existing explanation.\n- Length: 2–4 lines.\n- NCERT-aligned.\n- If no explanation can be confidently written, set explanation = null.\n\nC. DIFFICULTY TAGGING (MANDATORY RULES)\nAssign difficulty using ONLY the rules below:\n\n- \"easy\":\n  - Direct factual recall\n  - Single NCERT line\n  - No reasoning or inference required\n\n- \"medium\":\n  - Conceptual understanding required\n  - One logical step or biological reasoning\n  - Typical NEET-level MCQ\n\n- \"hard\":\n  - Multi-step reasoning\n  - Concept integration\n  - Exception-based or tricky elimination\n\nIf difficulty cannot be confidently determined, set it to null.\n\nD. OPTIONS\n- Preserve option text exactly.\n- Mark isCorrect = true ONLY if the correct option is certain.\n- If the correct option is unknown, set all isCorrect = false.\n\nE. NORMALIZATION\n- Normalize casing (Title Case for chapter/topic).\n- Do NOT creatively rename chapters or topics.\n- Minor trimming is allowed, meaning must not change.\n\nF. OUTPUT RULES\n- Output ONLY a JSON array.\n- No markdown.\n- No comments.\n- No extra text before or after JSON.\n\nInput questions:\n\n{{ $json }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "You are an academic content editor for NEET and JEE exam questions.\n\nYour responsibilities are STRICT:\n\n1. Rewrite explanations in ORIGINAL language.\n   - Do NOT copy from any source.\n   - Keep explanations concise (2–4 lines).\n   - Align with NCERT concepts.\n   - Do NOT change the question text.\n\n2. Conform every question EXACTLY to the provided JSON schema.\n   - Do NOT add extra fields.\n   - Do NOT remove required fields.\n   - Ensure valid JSON output only.\n\n3. Preserve all URLs exactly as they appear.\n   - If a question or explanation contains a URL, keep it unchanged.\n   - Do NOT rewrite, shorten, or remove URLs.\n\n4. Do NOT guess missing information.\n   - If explanation, difficulty, or correct answer cannot be determined with certainty, set them to null.\n\n5. Return ONLY valid JSON.\n   - No markdown.\n   - No comments.\n   - No explanations outside JSON.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1120,
+        -736
+      ],
+      "id": "690739b5-4a73-4c61-9b45-828686a35c3b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        -480
+      ],
+      "id": "b04228ba-cd4b-40d6-8632-e28f4debe70a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ORUwPwaZTuQsBcdf",
+          "name": "Gemini Free"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        -480
+      ],
+      "id": "b47d93aa-6c1d-4bdb-a4c5-6c4d6381bdf0",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "4ZEZ83UlO38Ss7tT",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are given an array of scraped exam questions.\n\nFor EACH question, perform the following tasks:\n\nA. STRUCTURE\n- Keep the question text EXACTLY unchanged.\n- Preserve all URLs present anywhere in the text or explanation.\n- Ensure the final object follows this schema EXACTLY:\n\n{\n  \"id\": string,\n  \"legacy_id\": string | null,\n\n  \"exam\": string,\n  \"year\": number,\n\n  \"subject\": string,\n  \"stream\": string,\n  \"chapter\": string,\n  \"topic\": string,\n\n  \"question_number\": number,\n  \"type\": \"MCQ\",\n\n  \"question_text\": string,\n\n  \"options\": [\n    {\n      \"id\": string,\n      \"text\": string,\n      \"isCorrect\": boolean\n    }\n  ],\n\n  \"marks\": number | null,\n  \"negative_marks\": number | null,\n  \"time_limit_sec\": number,\n\n  \"difficulty\": \"easy\" | \"medium\" | \"hard\" | null,\n\n  \"solution\": {\n    \"explanation\": string | null,\n    \"source\": string | null\n  },\n\n  \"meta\": {\n    \"verified\": boolean,\n    \"version\": number\n  }\n}\n\nB. EXPLANATION (CLEAN-ROOM)\n- Rewrite the explanation in your own words.\n- Do NOT copy any existing explanation.\n- Length: 2–4 lines.\n- NCERT-aligned.\n- If no explanation can be confidently written, set explanation = null.\n\nC. DIFFICULTY TAGGING (MANDATORY RULES)\nAssign difficulty using ONLY the rules below:\n\n- \"easy\":\n  - Direct factual recall\n  - Single NCERT line\n  - No reasoning or inference required\n\n- \"medium\":\n  - Conceptual understanding required\n  - One logical step or biological reasoning\n  - Typical NEET-level MCQ\n\n- \"hard\":\n  - Multi-step reasoning\n  - Concept integration\n  - Exception-based or tricky elimination\n\nIf difficulty cannot be confidently determined, set it to null.\n\nD. OPTIONS\n- Preserve option text exactly.\n- Mark isCorrect = true ONLY if the correct option is certain.\n- If the correct option is unknown, set all isCorrect = false.\n\nE. NORMALIZATION\n- Normalize casing (Title Case for chapter/topic).\n- Do NOT creatively rename chapters or topics.\n- Minor trimming is allowed, meaning must not change.\n\nF. OUTPUT RULES\n- Output ONLY a JSON array.\n- No markdown.\n- No comments.\n- No extra text before or after JSON.\n\nInput questions (array of up to 40 items):\n {{ $json }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "systemMessage": "You are an academic content editor for NEET and JEE exam questions.  Your responsibilities are STRICT:  1. Rewrite explanations in ORIGINAL language.    - Do NOT copy from any source.    - Keep explanations concise (2–4 lines).    - Align with NCERT concepts.    - Do NOT change the question text.  2. Conform every question EXACTLY to the provided JSON schema.    - Do NOT add extra fields.    - Do NOT remove required fields.    - Ensure valid JSON output only.  3. Preserve all URLs exactly as they appear.    - If a question or explanation contains a URL, keep it unchanged.    - Do NOT rewrite, shorten, or remove URLs.  4. Do NOT guess missing information.    - If explanation, difficulty, or correct answer cannot be determined with certainty, set them to null.  5. Return ONLY valid JSON.    - No markdown.    - No comments.    - No explanations outside JSON."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        704,
+        0
+      ],
+      "id": "9f19a470-8da5-4cea-8bb0-c98a43a85302",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ORUwPwaZTuQsBcdf",
+          "name": "Gemini Free"
+        }
+      }
     }
   ],
   "connections": {
@@ -54,6 +160,56 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -61,7 +217,9 @@
     "availableInMCP": false
   },
   "staticData": null,
-  "meta": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
   "pinData": {
     "On form submission": [
       {
@@ -5406,7 +5564,7 @@
       }
     ]
   },
-  "versionId": "3b9d12fe-8684-4671-ae05-d3dec702e9d0",
+  "versionId": "f6949e47-36aa-47d6-ab80-372fca53587b",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
